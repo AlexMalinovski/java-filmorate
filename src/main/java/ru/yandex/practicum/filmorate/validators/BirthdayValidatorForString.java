@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.validators;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import ru.yandex.practicum.filmorate.configs.AppProperties;
-
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 
 @RequiredArgsConstructor

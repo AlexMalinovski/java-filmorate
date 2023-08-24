@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.validators;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.lang.annotation.*;
 
 @NotEmpty(message = "E-mail не может быть пустым")

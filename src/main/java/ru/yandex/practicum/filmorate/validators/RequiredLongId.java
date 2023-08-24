@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.validators;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Range;
-
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.*;
 
 @NotNull(message = "Id не может быть пустым")

@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.dto;
 
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.Birthday;
 import ru.yandex.practicum.filmorate.validators.RequiredEmail;
 import ru.yandex.practicum.filmorate.validators.RequiredLogin;
+import javax.validation.constraints.Positive;
 
 @Data
 public final class CreatedUserDto {
