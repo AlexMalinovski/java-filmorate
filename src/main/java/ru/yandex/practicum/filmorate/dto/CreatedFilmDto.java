@@ -5,12 +5,11 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.validators.FilmRelease;
-import ru.yandex.practicum.filmorate.validators.RequiredLongId;
 
 @Data
 public final class CreatedFilmDto {
-    @RequiredLongId
-    private final Long id;
+    @Positive(message = "Id должен быть положительным числом")
+    private final long id;
 
     @NotBlank(message = "Название не может быть пустым")
     private final String name;

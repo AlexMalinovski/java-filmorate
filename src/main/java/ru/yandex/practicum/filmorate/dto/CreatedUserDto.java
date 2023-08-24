@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dto;
 
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validators.Birthday;
 import ru.yandex.practicum.filmorate.validators.RequiredEmail;
@@ -8,8 +9,8 @@ import ru.yandex.practicum.filmorate.validators.RequiredLongId;
 
 @Data
 public final class CreatedUserDto {
-    @RequiredLongId
-    private final Long id;
+    @Positive(message = "Id должен быть положительным числом")
+    private final long id;
 
     @RequiredEmail
     private final String email;
