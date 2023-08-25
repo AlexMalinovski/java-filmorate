@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Repeatable(FilmRelease.List.class)
 @Constraint(validatedBy = FilmReleaseValidatorForString.class)
 public @interface FilmRelease {
-    String message() default "";
+    String message() default "Обязательное значение в формате по-умолчанию. Не раньше 1895-12-28";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
