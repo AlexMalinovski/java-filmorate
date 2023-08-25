@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 @ConfigurationProperties(prefix = "app.prop")
 @Data
 public class AppProperties {
-    private String defaultDateFormat = "dd.MM.yyy";
+    private String defaultDateFormat = "yyyy-MM-dd";
 
     public DateTimeFormatter getDefaultDateFormatter() {
         return DateTimeFormatter.ofPattern(defaultDateFormat);

@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.dto;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.validators.FilmRelease;
 
@@ -8,6 +10,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
 @Data
+@Builder
+@RequiredArgsConstructor
 public final class CreatedFilmDto {
     @Positive(message = "Id должен быть положительным числом")
     private final long id;

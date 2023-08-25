@@ -19,5 +19,5 @@ public final class FilmDto {
     private final String releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительной")
-    private final int duration;
+    private final long duration;
 }

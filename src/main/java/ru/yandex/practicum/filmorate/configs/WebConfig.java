@@ -13,12 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        var dateFormatter = appProperties.getDefaultDateFormatter();
-        registry.addConverter(new FilmDtoToFilm(dateFormatter));
-        registry.addConverter(new FilmToCreatedFilmDto(dateFormatter));
-        registry.addConverter(new CreatedFilmDtoToFilm(dateFormatter));
-        registry.addConverter(new UserDtoToUser(dateFormatter));
-        registry.addConverter(new UserToCreatedUserDto(dateFormatter));
-        registry.addConverter(new CreatedUserDtoToUser(dateFormatter));
+        registry.addConverter(new FilmGenericConverter(appProperties));
+        registry.addConverter(new UserGenericConverter(appProperties));
     }
 }
