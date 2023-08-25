@@ -15,6 +15,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class UserGenericConverter extends AbstractGenericConverter {
     private final AppProperties appProperties;
+
     @Override
     protected Map<ConvertiblePair, Function<Object, Object>> setSupportConversions() {
         return Map.ofEntries(
