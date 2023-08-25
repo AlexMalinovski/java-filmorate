@@ -8,6 +8,9 @@ import ru.yandex.practicum.filmorate.validators.RequiredEmail;
 import ru.yandex.practicum.filmorate.validators.RequiredLogin;
 import javax.validation.constraints.Positive;
 
+/**
+ * Controllers-DTO для отображения пользователей
+ */
 @Data
 @Builder
 @RequiredArgsConstructor

@@ -9,6 +9,9 @@ import ru.yandex.practicum.filmorate.validators.FilmRelease;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
+/**
+ * Controllers-DTO для отображения фильмов
+ */
 @Data
 @Builder
 @RequiredArgsConstructor

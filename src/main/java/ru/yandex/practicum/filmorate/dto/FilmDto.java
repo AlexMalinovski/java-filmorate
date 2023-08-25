@@ -7,6 +7,9 @@ import ru.yandex.practicum.filmorate.validators.FilmRelease;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
+/**
+ * Controllers-DTO для создания или редактирования (id должен быть передан через PathVariable) фильмов.
+ */
 @Data
 public final class FilmDto {
     @NotBlank(message = "Название не может быть пустым")

@@ -10,6 +10,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Controllers-DTO для передачи сведений об ошибке
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 public class ProblemDetail {
