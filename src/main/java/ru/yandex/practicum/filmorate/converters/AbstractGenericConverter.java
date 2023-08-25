@@ -14,6 +14,7 @@ public abstract class AbstractGenericConverter implements GenericConverter {
     public AbstractGenericConverter() {
         this.conversions = setSupportConversions();
     }
+
     protected abstract Map<ConvertiblePair, Function<Object, Object>> setSupportConversions();
 
     @Override
@@ -30,7 +31,7 @@ public abstract class AbstractGenericConverter implements GenericConverter {
         }
         var converter = Optional
                 .ofNullable(conversions.get(new ConvertiblePair(sourceType.getType(), targetType.getType())))
-                .orElseThrow(() ->new IllegalArgumentException("Конвертация из " + sourceType.getType()
+                .orElseThrow(() -> new IllegalArgumentException("Конвертация из " + sourceType.getType()
                         + " в " + targetType.getType() + " не поддерживается."));
         return converter.apply(sourceObj);
     }
