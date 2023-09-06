@@ -45,7 +45,7 @@ public class FilmServiceImpl implements FilmService {
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id:" + userId));
         film.addLike(user.getId());
         return filmStorage.updateFilm(film)
-                .orElseThrow(() ->new NotFoundException("Фильм был удалён другим пользователем"));
+                .orElseThrow(() -> new NotFoundException("Фильм был удалён другим пользователем"));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class FilmServiceImpl implements FilmService {
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id:" + filmId));
         film.removeLike(user.getId());
         return filmStorage.updateFilm(film)
-                .orElseThrow(() ->new NotFoundException("Фильм был удалён другим пользователем"));
+                .orElseThrow(() -> new NotFoundException("Фильм был удалён другим пользователем"));
     }
 
     @Override
