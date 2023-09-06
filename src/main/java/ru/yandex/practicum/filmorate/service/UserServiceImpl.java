@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
         final User friend = userStorage.getUserById(friendId)
                 .orElseThrow(() -> new NotFoundException("Не найден друг id=" + friendId));
-        if(!user.removeFriend(friendId)) {
+        if (!user.removeFriend(friendId)) {
             throw new NotFoundException("У пользователя нет друга с id=" + friendId);
         }
         friend.removeFriend(id);
