@@ -9,13 +9,10 @@ import ru.yandex.practicum.filmorate.validators.FilmRelease;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
-/**
- * Controllers-DTO для отображения фильмов
- */
 @Data
 @Builder
 @RequiredArgsConstructor
-public final class CreatedFilmDto {
+public final class UpdateFilmDto {
     @Positive(message = "Id должен быть положительным числом")
     private final long id;
 
@@ -30,5 +27,4 @@ public final class CreatedFilmDto {
 
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private final long duration;
-    private final int numLikes;
 }
