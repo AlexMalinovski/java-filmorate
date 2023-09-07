@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-class CreatedUserDtoTest {
+class UpdateUserDtoTest {
     @Autowired
     private Validator validator;
     @Autowired
@@ -28,113 +28,113 @@ class CreatedUserDtoTest {
 
     @Test
     public void ifEmailNullOrBlank_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, null, "login", "name", getValidBirthdayDate()));
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, null, "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "", "login", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, "", "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, " ", "login", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, " ", "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
     }
 
     @Test
     public void ifEmailInvalidFormat_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, "email", "login", "name", getValidBirthdayDate()));
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, "email", "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "email@", "login", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, "email@", "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "email.ru@", "login", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, "email.ru@", "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "em@il@dfg.com", "login", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, "em@il@dfg.com", "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void ifEmailValidFormat_validationSuccess() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "login", "name", getValidBirthdayDate()));
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "login", "name", getValidBirthdayDate()));
         assertTrue(violations.isEmpty());
     }
 
     @Test
     public void ifLoginNullOrBlank_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", null, "name", getValidBirthdayDate()));
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", null, "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", " ", "name", getValidBirthdayDate()));
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", " ", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void ifBirthdayNullOrBlank_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", null, "name", null));
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", null, "name", null));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "", "name", ""));
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "", "name", ""));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", " ", "name", " "));
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", " ", "name", " "));
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void ifLoginContainSpace_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "log in", "name", getValidBirthdayDate()));
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "log in", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void ifBirthdayAfterNow_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
+        Set<ConstraintViolation<UpdateUserDto>> violations;
         LocalDate date = LocalDate.now().plusDays(1);
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "login", "name",
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "login", "name",
                 date.format(appProperties.getDefaultDateFormatter())));
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void ifBirthdayNowOrBefore_validationSuccess() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
+        Set<ConstraintViolation<UpdateUserDto>> violations;
         LocalDate date = LocalDate.now();
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "login", "name",
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "login", "name",
                 date.format(appProperties.getDefaultDateFormatter())));
         assertTrue(violations.isEmpty());
 
         date = date.minusDays(1);
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru", "login", "name",
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru", "login", "name",
                 date.format(appProperties.getDefaultDateFormatter())));
         assertTrue(violations.isEmpty());
     }
 
     @Test
     public void ifIdEqualsOrLessZero_validationFails() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(-1L, "email@mail.ru",
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(-1L, "email@mail.ru",
                 "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
 
-        violations = validator.validate(new CreatedUserDto(0L, "email@mail.ru",
+        violations = validator.validate(new UpdateUserDto(0L, "email@mail.ru",
                 "login", "name", getValidBirthdayDate()));
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void ifIdMoreZero_validationSuccess() {
-        Set<ConstraintViolation<CreatedUserDto>> violations;
-        violations = validator.validate(new CreatedUserDto(1L, "email@mail.ru",
+        Set<ConstraintViolation<UpdateUserDto>> violations;
+        violations = validator.validate(new UpdateUserDto(1L, "email@mail.ru",
                 "login", "name", getValidBirthdayDate()));
         assertTrue(violations.isEmpty());
     }

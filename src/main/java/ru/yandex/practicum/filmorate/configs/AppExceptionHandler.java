@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import ru.yandex.practicum.filmorate.dto.ProblemDetail;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,22 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getMessage());
         log.trace(ex.getMessage());
         return handleExceptionInternal(ex, problemDetail, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+        ProblemDetail problemDetail = new ProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                ((ServletWebRequest) request).getRequest().getRequestURI(),
+                "Ошибка валидации");
+        Map<String, String> errors = ex.getConstraintViolations()
+                .stream()
+                .collect(Collectors.toMap(
+                        f -> f.getPropertyPath().toString(),
+                        f -> f.getMessage() != null ? f.getMessage() : ""));
+        problemDetail.setProperty("errors", errors);
+        log.warn(ex.getMessage());
+        return handleExceptionInternal(ex, problemDetail, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.GenericConverter;
 import ru.yandex.practicum.filmorate.configs.AppProperties;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
+import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,8 +21,8 @@ public class UserGenericConverter extends AbstractGenericConverter {
     protected Map<ConvertiblePair, Function<Object, Object>> setSupportConversions() {
         return Map.ofEntries(
                 new AbstractMap.SimpleEntry<>(
-                        new GenericConverter.ConvertiblePair(CreatedUserDto.class, User.class),
-                        this::convertCreatedUserDtoToUser),
+                        new GenericConverter.ConvertiblePair(UpdateUserDto.class, User.class),
+                        this::convertUpdateUserDtoToUser),
                 new AbstractMap.SimpleEntry<>(
                         new GenericConverter.ConvertiblePair(UserDto.class, User.class),
                         this::convertUserDtoToUser),
@@ -30,8 +31,8 @@ public class UserGenericConverter extends AbstractGenericConverter {
                         this::convertUserToCreatedUserDto));
     }
 
-    private User convertCreatedUserDtoToUser(Object createdUserDto) {
-        CreatedUserDto dto = (CreatedUserDto) createdUserDto;
+    private User convertUpdateUserDtoToUser(Object updateUserDto) {
+        UpdateUserDto dto = (UpdateUserDto) updateUserDto;
         String name = (dto.getName() == null || dto.getName().isBlank()) ? dto.getLogin() : dto.getName();
         return User.builder()
                 .id(dto.getId())
@@ -61,6 +62,7 @@ public class UserGenericConverter extends AbstractGenericConverter {
                 .login(user.getLogin())
                 .name(user.getName())
                 .birthday(user.getBirthday().format(appProperties.getDefaultDateFormatter()))
+                .numFriends(user.getNumOfFriends())
                 .build();
     }
 }

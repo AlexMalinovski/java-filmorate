@@ -5,30 +5,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.convert.ConversionService;
 import ru.yandex.practicum.filmorate.configs.AppProperties;
-import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class ConverterIntegrationTest {
+class UserGenericConverterTest {
+
     @Autowired
     private AppProperties appProperties;
+
     @Autowired
     private ConversionService conversionService;
-
-    private String getValidReleaseDate() {
-        LocalDate date = LocalDate.of(1990, Month.JANUARY, 1);
-        return date.format(appProperties.getDefaultDateFormatter());
-    }
 
     private String getValidBirthdayDate() {
         LocalDate date = LocalDate.of(1990, Month.JANUARY, 1);
@@ -36,45 +30,13 @@ class ConverterIntegrationTest {
     }
 
     @Test
-    public void createdFilmDto_to_Film_isConvertible() {
-        CreatedFilmDto dto = new CreatedFilmDto(1L, "name", "descr", getValidReleaseDate(), 120);
-        Film film = conversionService.convert(dto, Film.class);
-        assertNotNull(film);
-        assertEquals(dto.getId(), (long) film.getId());
-        assertEquals(dto.getName(), film.getName());
-        assertEquals(dto.getDescription(), film.getDescription());
-        assertEquals(dto.getReleaseDate(), film.getReleaseDate().format(appProperties.getDefaultDateFormatter()));
-        assertEquals(dto.getDuration(), film.getDuration().toMinutes());
-    }
-
-    @Test
-    public void film_to_createdFilmDto_isConvertible() {
-        LocalDate date = LocalDate.of(1990, Month.JANUARY, 1);
-        Film film = new Film(1L, "name", "descr", date, Duration.ofMinutes(120));
-        CreatedFilmDto dto = conversionService.convert(film, CreatedFilmDto.class);
-        assertNotNull(dto);
-        assertEquals(film.getId(), dto.getId());
-        assertEquals(film.getName(), dto.getName());
-        assertEquals(film.getDescription(), dto.getDescription());
-        assertEquals(film.getReleaseDate().format(appProperties.getDefaultDateFormatter()), dto.getReleaseDate());
-        assertEquals(film.getDuration().toMinutes(), dto.getDuration());
-    }
-
-    @Test
-    public void filmDto_to_Film_isConvertible() {
-        FilmDto dto = new FilmDto("name", "descr", getValidReleaseDate(), 120);
-        Film film = conversionService.convert(dto, Film.class);
-        assertNotNull(film);
-        assertNull(film.getId());
-        assertEquals(dto.getName(), film.getName());
-        assertEquals(dto.getDescription(), film.getDescription());
-        assertEquals(dto.getReleaseDate(), film.getReleaseDate().format(appProperties.getDefaultDateFormatter()));
-        assertEquals(dto.getDuration(), film.getDuration().toMinutes());
-    }
-
-    @Test
-    public void createdUserDto_to_User_isConvertible() {
-        CreatedUserDto dto = new CreatedUserDto(1L, "e@m.ru", "login", "name", getValidBirthdayDate());
+    public void updateUserDto_to_User_isConvertible() {
+        UpdateUserDto dto = UpdateUserDto.builder()
+                .id(1L)
+                .email("e@m.ru")
+                .login("login")
+                .name("name")
+                .birthday(getValidBirthdayDate()).build();
         User user = conversionService.convert(dto, User.class);
         assertNotNull(user);
         assertEquals(dto.getId(), user.getId());
@@ -87,7 +49,13 @@ class ConverterIntegrationTest {
     @Test
     public void user_to_CreatedUserDto_isConvertible() {
         LocalDate date = LocalDate.of(1990, Month.JANUARY, 1);
-        User user = new User(1L, "e@m.ru", "login", "name", date);
+        User user = User.builder()
+                .id(1L)
+                .email("e@m.ru")
+                .login("login")
+                .name("name")
+                .birthday(date)
+                .build();
         CreatedUserDto dto = conversionService.convert(user, CreatedUserDto.class);
         assertNotNull(dto);
         assertEquals(user.getId(), dto.getId());
@@ -130,20 +98,38 @@ class ConverterIntegrationTest {
     }
 
     @Test
-    public void ifUserNameNullOrEmptyInCreatedUserDto_setNameAsLoginInUser() {
-        CreatedUserDto dto;
+    public void ifUserNameNullOrEmptyInUpdateUserDto_setNameAsLoginInUser() {
+        UpdateUserDto dto;
         User user;
-        dto = new CreatedUserDto(1L,"e@m.ru", "login", null, getValidBirthdayDate());
+        dto = UpdateUserDto.builder()
+                .id(1L)
+                .email("e@m.ru")
+                .login("login")
+                .name(null)
+                .birthday(getValidBirthdayDate())
+                .build();
         user = conversionService.convert(dto, User.class);
         assertNotNull(user);
         assertEquals(dto.getLogin(), user.getName());
 
-        dto = new CreatedUserDto(1L, "e@m.ru", "login", "", getValidBirthdayDate());
+        dto = UpdateUserDto.builder()
+                .id(1L)
+                .email("e@m.ru")
+                .login("login")
+                .name("")
+                .birthday(getValidBirthdayDate())
+                .build();
         user = conversionService.convert(dto, User.class);
         assertNotNull(user);
         assertEquals(dto.getLogin(), user.getName());
 
-        dto = new CreatedUserDto(1L, "e@m.ru", "login", " ", getValidBirthdayDate());
+        dto = UpdateUserDto.builder()
+                .id(1L)
+                .email("e@m.ru")
+                .login("login")
+                .name(" ")
+                .birthday(getValidBirthdayDate())
+                .build();
         user = conversionService.convert(dto, User.class);
         assertNotNull(user);
         assertEquals(dto.getLogin(), user.getName());
