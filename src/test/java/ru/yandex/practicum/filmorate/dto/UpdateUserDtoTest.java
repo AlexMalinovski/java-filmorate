@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.dto;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.configs.AppProperties;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Set;

@@ -34,6 +34,10 @@ public class User {
         return friends.add(userId);
     }
 
+    public void addFriend(Set<Long> usersId) {
+        this.friends.addAll(usersId);
+    }
+
     public boolean removeFriend(long userId) {
         return friends.remove(userId);
     }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.lang.NonNull;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,4 +29,10 @@ public interface FilmService {
 
     @NonNull
     List<Film> getMostPopularFilms(int count);
+
+    @NonNull
+    List<Genre> getGenres();
+
+    @NonNull
+    Optional<Genre> getGenreById(long id);
 }

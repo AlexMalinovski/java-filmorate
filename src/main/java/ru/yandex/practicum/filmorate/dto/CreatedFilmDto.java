@@ -4,10 +4,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import ru.yandex.practicum.filmorate.model.FilmRating;
 import ru.yandex.practicum.filmorate.validators.FilmRelease;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controllers-DTO для отображения фильмов
@@ -31,4 +34,8 @@ public final class CreatedFilmDto {
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private final long duration;
     private final int numLikes;
+    private final FilmRating mpa;
+
+    @Builder.Default
+    private final List<CreatedGenreDto> genres = new ArrayList<>();
 }

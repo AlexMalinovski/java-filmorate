@@ -138,17 +138,13 @@ class UserServiceImplTest {
         User user = User.builder().id(id).name("user").build();
         User expectedUser = User.builder().id(id).name("user").friends(Set.of(friendId)).build();
         User friend = User.builder().id(friendId).name("friend").build();
-        User expectedFriend = User.builder().id(friendId).name("friend").friends(Set.of(id)).build();
         when(userStorage.getUserById(id)).thenReturn(Optional.of(user));
         when(userStorage.getUserById(friendId)).thenReturn(Optional.of(friend));
-        when(userStorage.updateUser(expectedUser)).thenReturn(Optional.of(expectedUser));
-        when(userStorage.updateUser(expectedFriend)).thenReturn(Optional.of(expectedFriend));
 
         User actualUser = userService.addAsFriend(id, friendId);
 
-        verify(userStorage).updateUser(expectedUser);
-        verify(userStorage).updateUser(expectedFriend);
-        assertSame(expectedUser, actualUser);
+        verify(userStorage).createFriend(id, friendId);
+        assertEquals(expectedUser, actualUser);
     }
 
     @Test
@@ -194,17 +190,13 @@ class UserServiceImplTest {
         User user = User.builder().id(id).name("user").friends(new HashSet<>(List.of(friendId))).build();
         User friend = User.builder().id(friendId).name("friend").friends(new HashSet<>(List.of(id))).build();
         User expectedUser = User.builder().id(id).name("user").build();
-        User expectedFriend = User.builder().id(friendId).name("friend").build();
         when(userStorage.getUserById(id)).thenReturn(Optional.of(user));
         when(userStorage.getUserById(friendId)).thenReturn(Optional.of(friend));
-        when(userStorage.updateUser(expectedUser)).thenReturn(Optional.of(expectedUser));
-        when(userStorage.updateUser(expectedFriend)).thenReturn(Optional.of(expectedFriend));
 
         User actualUser = userService.removeFromFriends(id, friendId);
 
-        verify(userStorage).updateUser(expectedUser);
-        verify(userStorage).updateUser(expectedFriend);
-        assertSame(expectedUser, actualUser);
+        verify(userStorage).removeFriend(id, friendId);
+        assertEquals(expectedUser, actualUser);
     }
 
     @Test
@@ -225,11 +217,11 @@ class UserServiceImplTest {
         final User user = User.builder().id(id).friends(friendSet).build();
         final User friend = User.builder().id(friendId).build();
         when(userStorage.getUserById(id)).thenReturn(Optional.of(user));
-        when(userStorage.getUsersById(friendSet)).thenReturn(List.of(friend));
+        when(userStorage.getUserFriends(id)).thenReturn(List.of(friend));
 
         List<User> actual = userService.getUserFriends(id);
 
-        verify(userStorage).getUsersById(friendSet);
+        verify(userStorage).getUserFriends(id);
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertSame(friend, actual.get(0));
@@ -272,13 +264,13 @@ class UserServiceImplTest {
         final User friend6 = User.builder().id(6L).build();
         when(userStorage.getUserById(id)).thenReturn(Optional.of(user));
         when(userStorage.getUserById(otherId)).thenReturn(Optional.of(other));
-        when(userStorage.getUsersById(usersFriends)).thenReturn(List.of(friend4, friend5));
-        when(userStorage.getUsersById(otherFriends)).thenReturn(List.of(friend5, friend6));
+        when(userStorage.getUserFriends(id)).thenReturn(List.of(friend4, friend5));
+        when(userStorage.getUserFriends(otherId)).thenReturn(List.of(friend5, friend6));
 
         List<User> actual = userService.getCommonFriends(id, otherId);
 
-        verify(userStorage).getUsersById(usersFriends);
-        verify(userStorage).getUsersById(otherFriends);
+        verify(userStorage).getUserFriends(id);
+        verify(userStorage).getUserFriends(otherId);
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertSame(friend5, actual.get(0));

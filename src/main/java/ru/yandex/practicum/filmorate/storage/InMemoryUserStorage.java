@@ -62,4 +62,25 @@ public class InMemoryUserStorage implements UserStorage {
                 .map(User::copyOf)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void createFriend(long userId, long friendId) {
+        users.computeIfPresent(userId, (id, user) -> {
+            user.addFriend(friendId);
+            return user;
+        });
+    }
+
+    @Override
+    public void removeFriend(long userId, long friendId) {
+        users.computeIfPresent(userId, (id, user) -> {
+            user.removeFriend(friendId);
+            return user;
+        });
+    }
+
+    @Override
+    public List<User> getUserFriends(long id) {
+        throw new IllegalStateException("Not implemented!");
+    }
 }

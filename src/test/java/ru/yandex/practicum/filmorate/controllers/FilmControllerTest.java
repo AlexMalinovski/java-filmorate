@@ -5,13 +5,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.configs.AppProperties;
+import ru.yandex.practicum.filmorate.configs.TestAppConfig;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.LongIdDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmRating;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.Duration;
@@ -25,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FilmController.class)
+@Import(TestAppConfig.class)
 class FilmControllerTest {
     @MockBean
     private FilmService filmService;
@@ -48,6 +54,7 @@ class FilmControllerTest {
                 .duration(120L)
                 .releaseDate(LocalDate.of(1990, 1, 1)
                         .format(appProperties.getDefaultDateFormatter()))
+                .mpa(new LongIdDto(1))
                 .build();
     }
 
@@ -59,6 +66,7 @@ class FilmControllerTest {
                 .duration(120L)
                 .releaseDate(LocalDate.of(1990, 1, 1)
                         .format(appProperties.getDefaultDateFormatter()))
+                .mpa(new LongIdDto(1))
                 .build();
     }
 
@@ -69,7 +77,12 @@ class FilmControllerTest {
                 .description("description")
                 .duration(Duration.ofMinutes(120))
                 .releaseDate(LocalDate.of(1990, 1, 1))
+                .rating(FilmRating.G)
                 .build();
+    }
+
+    private Genre getValidGenre() {
+        return Genre.builder().id(1L).name("name").build();
     }
 
     @Test
@@ -121,6 +134,31 @@ class FilmControllerTest {
     public void getMostPopularFilms_isAvailable() throws Exception {
         when(filmService.getMostPopularFilms(anyInt())).thenReturn(List.of(getValidFilm()));
         mockMvc.perform(get("/films/popular?count=10"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getGenres_isAvailable() throws Exception {
+        mockMvc.perform(get("/genres"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getFilmRatings_isAvailable() throws Exception {
+        mockMvc.perform(get("/mpa"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getGenreById_isAvailable() throws Exception {
+        when(filmService.getGenreById(anyLong())).thenReturn(Optional.of(getValidGenre()));
+        mockMvc.perform(get("/genres/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getFilmRatingById_isAvailable() throws Exception {
+        mockMvc.perform(get("/mpa/1"))
                 .andExpect(status().isOk());
     }
 }

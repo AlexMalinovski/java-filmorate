@@ -1,17 +1,18 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter(AccessLevel.PACKAGE)
 @Component
@@ -59,5 +60,31 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .limit(count)
                 .map(Film::copyOf)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void createFilmLike(long filmId, long userId) {
+        films.computeIfPresent(filmId, (id, film) -> {
+            film.addLike(userId);
+            return film;
+        });
+    }
+
+    @Override
+    public void removeFilmLike(long filmId, long userId) {
+        films.computeIfPresent(filmId, (id, film) -> {
+            film.removeLike(userId);
+            return film;
+        });
+    }
+
+    @Override
+    public void addFilmGenres(long id, Set<Long> foundGenresId) {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
+    public void removeFilmGenres(long id, Set<Long> genresToRemove) {
+        throw new IllegalStateException("Not implemented");
     }
 }

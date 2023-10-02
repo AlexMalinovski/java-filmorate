@@ -22,4 +22,11 @@ public interface UserStorage {
 
     @NonNull
     List<User> getUsersById(@NonNull Set<Long> ids);
+
+    void createFriend(long userId, long friendId);
+
+    void removeFriend(long userId, long friendId);
+
+    @NonNull
+    List<User> getUserFriends(long id);
 }

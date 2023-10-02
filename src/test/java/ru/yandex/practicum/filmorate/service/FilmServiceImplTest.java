@@ -2,14 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +26,9 @@ import static org.mockito.Mockito.when;
 class FilmServiceImplTest {
     @Mock
     private FilmStorage filmStorage;
+
+    @Mock
+    private GenreStorage genreStorage;
 
     @Mock
     private UserStorage userStorage;
@@ -84,6 +87,7 @@ class FilmServiceImplTest {
     void updateFilm_ifFounded_thenReturnUpdatedOptional() {
         var expected = Film.builder().id(1L).name("name").build();
         when(filmStorage.updateFilm(expected)).thenReturn(Optional.of(expected));
+        when(filmStorage.getFilmById(expected.getId())).thenReturn(Optional.of(expected));
 
         var actual = filmService.updateFilm(expected);
 
@@ -148,18 +152,14 @@ class FilmServiceImplTest {
         final User user = User.builder().id(userId).name("username").build();
         when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
-        when(filmStorage.updateFilm(any(Film.class))).thenReturn(Optional.of(expected));
-        ArgumentCaptor<Film> filmCaptor = ArgumentCaptor.forClass(Film.class);
 
         Film result = filmService.likeFilm(filmId, userId);
 
-
         verify(filmStorage).getFilmById(filmId);
         verify(userStorage).getUserById(userId);
-        verify(filmStorage).updateFilm(filmCaptor.capture());
+        verify(filmStorage).createFilmLike(filmId, userId);
         assertNotNull(result);
-        assertSame(expected, result);
-        assertEquals(expected, filmCaptor.getValue());
+        assertEquals(expected, result);
     }
 
     @Test
@@ -196,18 +196,14 @@ class FilmServiceImplTest {
         final User user = User.builder().id(userId).name("username").build();
         when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getUserById(userId)).thenReturn(Optional.of(user));
-        when(filmStorage.updateFilm(any(Film.class))).thenReturn(Optional.of(expected));
-        ArgumentCaptor<Film> filmCaptor = ArgumentCaptor.forClass(Film.class);
 
         Film result = filmService.unlikeFilm(filmId, userId);
 
-
         verify(filmStorage).getFilmById(filmId);
         verify(userStorage).getUserById(userId);
-        verify(filmStorage).updateFilm(filmCaptor.capture());
+        verify(filmStorage).removeFilmLike(filmId, userId);
         assertNotNull(result);
-        assertSame(expected, result);
-        assertEquals(expected, filmCaptor.getValue());
+        assertEquals(expected, result);
     }
 
     @Test
@@ -233,5 +229,53 @@ class FilmServiceImplTest {
 
         verify(filmStorage).getMostPopularFilms(10);
         assertSame(expected, actual);
+    }
+
+    @Test
+    void getGenreById_ifNotFound_thenReturnEmptyOptional() {
+        when(genreStorage.getGenreById(1L)).thenReturn(Optional.empty());
+
+        var actual = filmService.getGenreById(1L);
+
+        verify(genreStorage).getGenreById(1L);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    void getGenreById_ifFounded_thenReturnFoundedOptional() {
+        var expected = Genre.builder().id(1L).name("name").build();
+        when(genreStorage.getGenreById(1L)).thenReturn(Optional.of(expected));
+
+        var actual = filmService.getGenreById(1L);
+
+        verify(genreStorage).getGenreById(1L);
+        assertNotNull(actual);
+        assertTrue(actual.isPresent());
+        assertSame(expected, actual.get());
+    }
+
+    @Test
+    void getGenres_ifNotFound_thenReturnEmptyList() {
+        when(genreStorage.getAllGenres()).thenReturn(new ArrayList<>());
+
+        var actual = filmService.getGenres();
+
+        verify(genreStorage).getAllGenres();
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+    }
+
+    @Test
+    void getGenres_ifFounded_thenReturnFounded() {
+        var expected = Genre.builder().id(1L).name("name").build();
+        when(genreStorage.getAllGenres()).thenReturn(List.of(expected));
+
+        var actual = filmService.getGenres();
+
+        verify(genreStorage).getAllGenres();
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertSame(expected, actual.get(0));
     }
 }
