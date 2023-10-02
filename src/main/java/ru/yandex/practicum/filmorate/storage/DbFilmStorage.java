@@ -78,6 +78,7 @@ public class DbFilmStorage implements FilmStorage {
         List<Film> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), limit, offset);
         return mapFilmQueryResult(queryResult);
     }
+
     @Override
     public List<Film> getAllFilms() {
         return getFilms(100, 0); //параметры - для будущей пагинации

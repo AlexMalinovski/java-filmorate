@@ -59,6 +59,7 @@ public class DbUserStorage implements UserStorage {
         List<User> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), limit, offset);
         return mapUserQueryResult(queryResult);
     }
+
     @Override
     public List<User> getAllUsers() {
         return getUsers(100, 0); //параметры - для будущей пагинации
