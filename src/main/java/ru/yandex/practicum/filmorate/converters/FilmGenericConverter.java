@@ -47,7 +47,7 @@ public class FilmGenericConverter extends AbstractGenericConverter {
                 .releaseDate(LocalDate.parse(dto.getReleaseDate(), appProperties.getDefaultDateFormatter()))
                 .duration(Duration.ofMinutes(dto.getDuration()))
                 .rating(FilmRating.getByIndex((int) dto.getMpa().getId())
-                        .orElseThrow(()-> new IllegalArgumentException("Некорректный индекс элемента FilmRating")))
+                        .orElseThrow(() -> new IllegalArgumentException("Некорректный индекс элемента FilmRating")))
                 .genres(genres)
                 .build();
     }
@@ -67,7 +67,7 @@ public class FilmGenericConverter extends AbstractGenericConverter {
                 .releaseDate(LocalDate.parse(dto.getReleaseDate(), appProperties.getDefaultDateFormatter()))
                 .duration(Duration.ofMinutes(dto.getDuration()))
                 .rating(FilmRating.getByIndex((int) dto.getMpa().getId())
-                        .orElseThrow(()-> new IllegalArgumentException("Некорректный индекс элемента FilmRating")))
+                        .orElseThrow(() -> new IllegalArgumentException("Некорректный индекс элемента FilmRating")))
                 .genres(genres)
                 .build();
     }
