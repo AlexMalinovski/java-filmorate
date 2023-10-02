@@ -70,7 +70,7 @@ class DbFilmStorageTest {
                 .rating(FilmRating.PG)
                 .build();
 
-        var actual =filmStorage.updateFilm(film);
+        var actual = filmStorage.updateFilm(film);
 
         assertThat(actual)
                 .isPresent()
