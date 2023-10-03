@@ -3,19 +3,24 @@ package ru.yandex.practicum.filmorate.converters;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
-import ru.yandex.practicum.filmorate.configs.AppProperties;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
+import ru.yandex.practicum.filmorate.configs.TestAppConfig;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.models.User;
 
 import java.time.LocalDate;
 import java.time.Month;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
+@Import(TestAppConfig.class)
 class UserGenericConverterTest {
 
     @Autowired

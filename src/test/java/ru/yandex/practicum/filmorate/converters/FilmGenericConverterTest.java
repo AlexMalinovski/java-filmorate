@@ -4,17 +4,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.convert.ConversionService;
-import ru.yandex.practicum.filmorate.configs.AppProperties;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.LongIdDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmRating;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 class FilmGenericConverterTest {
@@ -38,6 +43,7 @@ class FilmGenericConverterTest {
                 .description("descr")
                 .releaseDate(getValidReleaseDate())
                 .duration(120)
+                .mpa(new LongIdDto(1))
                 .build();
         Film film = conversionService.convert(dto, Film.class);
         assertNotNull(film);
@@ -57,6 +63,7 @@ class FilmGenericConverterTest {
                 .description("descr")
                 .releaseDate(date)
                 .duration(Duration.ofMinutes(120))
+                .rating(FilmRating.G)
                 .build();
         CreatedFilmDto dto = conversionService.convert(film, CreatedFilmDto.class);
         assertNotNull(dto);
@@ -69,7 +76,8 @@ class FilmGenericConverterTest {
 
     @Test
     public void filmDto_to_Film_isConvertible() {
-        FilmDto dto = new FilmDto("name", "descr", getValidReleaseDate(), 120);
+        FilmDto dto = new FilmDto("name", "descr", getValidReleaseDate(),
+                120, new LongIdDto(1), new ArrayList<>());
         Film film = conversionService.convert(dto, Film.class);
         assertNotNull(film);
         assertNull(film.getId());

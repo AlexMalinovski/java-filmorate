@@ -5,13 +5,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
+import ru.yandex.practicum.filmorate.dto.CreatedGenreDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,12 +30,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
     private final ConversionService conversionService;
 
-    @GetMapping
+    @GetMapping("/films")
     public ResponseEntity<List<CreatedFilmDto>> getFilms() {
         List<CreatedFilmDto> filmsDto = filmService.getFilms()
                 .stream()
@@ -35,7 +43,7 @@ public class FilmController {
         return ResponseEntity.ok(filmsDto);
     }
 
-    @PostMapping
+    @PostMapping("/films")
     public ResponseEntity<CreatedFilmDto> createFilm(@Valid @RequestBody FilmDto filmDto) {
         Film film = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации FilmDto->Film. Метод вернул null."));
@@ -44,7 +52,7 @@ public class FilmController {
         return ResponseEntity.ok(conversionService.convert(createdFilm, CreatedFilmDto.class));
     }
 
-    @PutMapping
+    @PutMapping("/films")
     public ResponseEntity<CreatedFilmDto> updateCreatedFilm(@Valid @RequestBody UpdateFilmDto filmDto) {
         final Film filmUpdates = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации CreatedFilmDto->Film. Метод вернул null."));
@@ -54,7 +62,7 @@ public class FilmController {
         return ResponseEntity.ok(conversionService.convert(result, CreatedFilmDto.class));
     }
 
-    @PutMapping(path = "/{id}")
+    @PutMapping(path = "/films/{id}")
     public ResponseEntity<CreatedFilmDto> updateFilmById(@PathVariable final long id,
                                                      @Valid @RequestBody FilmDto filmDto) {
         if (id <= 0) {
@@ -73,7 +81,7 @@ public class FilmController {
      * @param id Идентификатор фильма
      * @return CreatedFilmDto
      */
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/films/{id}")
     public ResponseEntity<CreatedFilmDto> getFilmById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
@@ -90,7 +98,7 @@ public class FilmController {
      * @param userId id пользователя
      * @return CreatedFilmDto
      */
-    @PutMapping(path = "/{filmId}/like/{userId}")
+    @PutMapping(path = "/films/{filmId}/like/{userId}")
     public ResponseEntity<CreatedFilmDto> likeFilm(@PathVariable long filmId,
                                                    @PathVariable long userId) {
         if (filmId <= 0 || userId <= 0) {
@@ -107,7 +115,7 @@ public class FilmController {
      * @param userId id пользователя
      * @return CreatedFilmDto
      */
-    @DeleteMapping(path = "/{filmId}/like/{userId}")
+    @DeleteMapping(path = "/films/{filmId}/like/{userId}")
     public ResponseEntity<CreatedFilmDto> unlikeFilm(@PathVariable long filmId,
                                                    @PathVariable long userId) {
         if (filmId <= 0 || userId <= 0) {
@@ -124,7 +132,7 @@ public class FilmController {
      * @param count количество фильмов
      * @return список CreatedFilmDto
      */
-    @GetMapping(path = "/popular")
+    @GetMapping(path = "/films/popular")
     public ResponseEntity<List<CreatedFilmDto>> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
         if (count <= 0) {
             throw new NotFoundException("Значение параметра count должно быть положительным");
@@ -134,5 +142,37 @@ public class FilmController {
                 .map(f -> conversionService.convert(f, CreatedFilmDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(filmsDto);
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<CreatedGenreDto>> getGenres() {
+        List<CreatedGenreDto> genres = filmService.getGenres()
+                .stream()
+                .map(g -> conversionService.convert(g, CreatedGenreDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(genres);
+    }
+
+    @GetMapping("/genres/{id}")
+    public ResponseEntity<CreatedGenreDto> getGenreById(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        return filmService.getGenreById(id)
+                .map(g -> conversionService.convert(g, CreatedGenreDto.class))
+                .map(ResponseEntity::ok)
+                .orElseThrow(() ->  new NotFoundException("Не найден жанр с id:" + id));
+    }
+
+    @GetMapping("/mpa")
+    public ResponseEntity<List<FilmRating>> getFilmRatings() {
+        return  ResponseEntity.ok(List.of(FilmRating.values()));
+    }
+
+    @GetMapping("/mpa/{id}")
+    public ResponseEntity<FilmRating> getFilmRatingById(@PathVariable int id) {
+        return FilmRating.getByIndex(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new NotFoundException("Отсутствует рейтинг с id:" + id));
     }
 }
