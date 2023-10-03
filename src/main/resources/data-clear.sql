@@ -1,5 +1,5 @@
-DELETE FROM user_friends;
-DELETE FROM film_likes;
-DELETE FROM film_genres;
-DELETE FROM users;
-DELETE FROM films;
+delete from user_friends;
+delete from film_likes;
+delete from film_genres;
+delete from users;
+delete from films;

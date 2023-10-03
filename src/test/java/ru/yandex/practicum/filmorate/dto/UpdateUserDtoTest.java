@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.dto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.configs.AppProperties;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import ru.yandex.practicum.filmorate.model.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.validators.FilmRelease;
 
 import javax.validation.constraints.NotBlank;

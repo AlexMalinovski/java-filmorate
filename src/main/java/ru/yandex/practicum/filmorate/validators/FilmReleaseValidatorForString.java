@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.validators;
 
 import lombok.RequiredArgsConstructor;
-import ru.yandex.practicum.filmorate.configs.AppProperties;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

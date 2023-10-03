@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.converters;
 
 import ru.yandex.practicum.filmorate.dto.CreatedGenreDto;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.util.AbstractMap;
 import java.util.Map;
