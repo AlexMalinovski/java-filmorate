@@ -1,8 +1,10 @@
 delete from user_friends;
 delete from film_likes;
 delete from film_genres;
+delete from film_directors;
 delete from users;
 delete from films;
+delete from directors;
 
 insert into films (id, name, description, release_date, duration, rating)
 values (1, 'film1', 'descr1', '2000-01-01', 120, 'PG'),

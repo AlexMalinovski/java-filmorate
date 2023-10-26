@@ -24,5 +24,9 @@ public interface FilmStorage {
 
     void addFilmGenres(long id, @NonNull Set<Long> foundGenresId);
 
+    void addFilmDirectors(long id, Set<Long> foundDirectors);
+
     void removeFilmGenres(long id, @NonNull Set<Long> genresToRemove);
+
+    void removeFilmDirectors(long id, Set<Long> directorsToRemove);
 }
