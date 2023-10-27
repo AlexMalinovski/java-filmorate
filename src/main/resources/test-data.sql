@@ -29,3 +29,11 @@ on conflict do nothing;
 insert into user_friends (user_id, friend_id)
 values (1, 2), (1, 3), (2, 1), (2, 3)
 on conflict do nothing;
+
+insert into directors (id, name)
+values (1, 'firstDirector'), (2, 'secondDirector'), (3, 'thirdDirector')
+on conflict do nothing;
+
+insert into film_directors (film_id, director_id)
+values (1,1), (1,2), (2,3)
+on conflict do nothing;

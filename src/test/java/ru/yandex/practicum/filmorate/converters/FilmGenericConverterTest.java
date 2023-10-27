@@ -77,7 +77,7 @@ class FilmGenericConverterTest {
     @Test
     public void filmDto_to_Film_isConvertible() {
         FilmDto dto = new FilmDto("name", "descr", getValidReleaseDate(),
-                120, new LongIdDto(1), new ArrayList<>());
+                120, new LongIdDto(1), new ArrayList<>(), new ArrayList<>());
         Film film = conversionService.convert(dto, Film.class);
         assertNotNull(film);
         assertNull(film.getId());

@@ -15,7 +15,7 @@ class FilmTest {
     @Test
     void copyOf() {
         Film film = new Film(1L, "name", "description", LocalDate.of(1990, 1, 1),
-                Duration.ofMinutes(120), new HashSet<>(Arrays.asList(1L, 5L, 7L)), FilmRating.G, new HashSet<>());
+                Duration.ofMinutes(120), new HashSet<>(Arrays.asList(1L, 5L, 7L)), FilmRating.G, new HashSet<>(), new HashSet<>());
         Film copy = film.copyOf();
         assertEquals(film, copy);
         assertNotSame(film, copy);
