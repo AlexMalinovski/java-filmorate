@@ -31,6 +31,9 @@ public interface FilmService {
     List<Film> getMostPopularFilms(int count);
 
     @NonNull
+    List<Film> getFilmsByDirector(long directorId, String sort);
+
+    @NonNull
     List<Genre> getGenres();
 
     @NonNull
