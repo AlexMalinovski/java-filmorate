@@ -60,7 +60,7 @@ class UpdateFilmDtoTest {
     public void ifDescriptionLengthEqual200_validationSuccess() {
         Set<ConstraintViolation<UpdateFilmDto>> violations;
         violations = validator.validate(new UpdateFilmDto(1L, "name",
-                "а".repeat(200),getValidReleaseDate(), 120, new LongIdDto(1), new ArrayList<>(), new ArrayList<>()));
+                "а".repeat(200), getValidReleaseDate(), 120, new LongIdDto(1), new ArrayList<>(), new ArrayList<>()));
         assertTrue(violations.isEmpty());
     }
 
@@ -68,7 +68,7 @@ class UpdateFilmDtoTest {
     public void ifDescriptionLengthMore200_validationFails() {
         Set<ConstraintViolation<UpdateFilmDto>> violations;
         violations = validator.validate(new UpdateFilmDto(1L, "name",
-                "а".repeat(201),getValidReleaseDate(), 120, new LongIdDto(1), new ArrayList<>(), new ArrayList<>()));
+                "а".repeat(201), getValidReleaseDate(), 120, new LongIdDto(1), new ArrayList<>(), new ArrayList<>()));
         assertFalse(violations.isEmpty());
     }
 

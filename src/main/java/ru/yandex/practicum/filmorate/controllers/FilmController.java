@@ -64,7 +64,7 @@ public class FilmController {
 
     @PutMapping(path = "/films/{id}")
     public ResponseEntity<CreatedFilmDto> updateFilmById(@PathVariable final long id,
-                                                     @Valid @RequestBody FilmDto filmDto) {
+                                                         @Valid @RequestBody FilmDto filmDto) {
         if (id <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -78,6 +78,7 @@ public class FilmController {
 
     /**
      * Получить фильм по уникальному идентификатору
+     *
      * @param id Идентификатор фильма
      * @return CreatedFilmDto
      */
@@ -94,6 +95,7 @@ public class FilmController {
 
     /**
      * Пользователь ставит лайк фильму
+     *
      * @param filmId id фильма
      * @param userId id пользователя
      * @return CreatedFilmDto
@@ -111,13 +113,14 @@ public class FilmController {
 
     /**
      * Пользователь удаляет лайк фильму
+     *
      * @param filmId id фильма
      * @param userId id пользователя
      * @return CreatedFilmDto
      */
     @DeleteMapping(path = "/films/{filmId}/like/{userId}")
     public ResponseEntity<CreatedFilmDto> unlikeFilm(@PathVariable long filmId,
-                                                   @PathVariable long userId) {
+                                                     @PathVariable long userId) {
         if (filmId <= 0 || userId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -129,6 +132,7 @@ public class FilmController {
     /**
      * Возвращает список из первых count фильмов по количеству лайков.
      * Если значение параметра count не задано, вернёт первые 10.
+     *
      * @param count количество фильмов
      * @return список CreatedFilmDto
      */
@@ -176,12 +180,12 @@ public class FilmController {
         return filmService.getGenreById(id)
                 .map(g -> conversionService.convert(g, CreatedGenreDto.class))
                 .map(ResponseEntity::ok)
-                .orElseThrow(() ->  new NotFoundException("Не найден жанр с id:" + id));
+                .orElseThrow(() -> new NotFoundException("Не найден жанр с id:" + id));
     }
 
     @GetMapping("/mpa")
     public ResponseEntity<List<FilmRating>> getFilmRatings() {
-        return  ResponseEntity.ok(List.of(FilmRating.values()));
+        return ResponseEntity.ok(List.of(FilmRating.values()));
     }
 
     @GetMapping("/mpa/{id}")

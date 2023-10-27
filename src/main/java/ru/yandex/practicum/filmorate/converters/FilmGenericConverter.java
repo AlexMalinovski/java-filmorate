@@ -2,17 +2,15 @@ package ru.yandex.practicum.filmorate.converters;
 
 import lombok.RequiredArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.CreatedDirectorDto;
-import ru.yandex.practicum.filmorate.dto.DirectorDto;
-import ru.yandex.practicum.filmorate.dto.LongIdDto;
-import ru.yandex.practicum.filmorate.models.Director;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
 import ru.yandex.practicum.filmorate.dto.CreatedGenreDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
+import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.Genre;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.time.Duration;
 import java.time.LocalDate;

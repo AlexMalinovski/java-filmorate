@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -167,7 +168,7 @@ public class DbUserStorage implements UserStorage {
                 "where uf.user_id=? " +
                 "order by user_id";
 
-        List<User> queryResult =  jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
+        List<User> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
         return mapUserQueryResult(queryResult);
     }
 }
