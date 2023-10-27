@@ -29,19 +29,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(DirectorController.class)
 @Import(TestAppConfig.class)
 class DirectorControllerTest {
-    
+
     @MockBean
     private DirectorService directorService;
-    
+
     @Autowired
     private ConversionService conversionService;
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     private AppProperties appProperties;
 

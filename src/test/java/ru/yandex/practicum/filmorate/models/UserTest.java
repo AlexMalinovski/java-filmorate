@@ -14,7 +14,7 @@ class UserTest {
     @Test
     void copyOf() {
         User user = new User(1L, "e@mail.ru", "login", "name",
-                LocalDate.of(1990, 1,1), new HashSet<>(Arrays.asList(1L, 5L, 7L)));
+                LocalDate.of(1990, 1, 1), new HashSet<>(Arrays.asList(1L, 5L, 7L)));
         User copy = user.copyOf();
         assertEquals(user, copy);
         assertNotSame(user, copy);

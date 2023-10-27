@@ -7,10 +7,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.Genre;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -162,12 +162,12 @@ public class DbFilmStorage implements FilmStorage {
     public List<Film> getMostPopularFilms(int count) {
         String sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id,  dir.id as director_id, dir.name as director_name \n" +
                 "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
-                    "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +
-                    "count(fl.user_id) as cnt\n" +
-                    "from films as f left join film_likes as fl on f.id=fl.film_id \n" +
-                    "group by film_id, film_name, film_description, film_release_date, film_duration, film_rating \n" +
-                    "order by cnt desc\n" +
-                    "limit ?) as topf \n" +
+                "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +
+                "count(fl.user_id) as cnt\n" +
+                "from films as f left join film_likes as fl on f.id=fl.film_id \n" +
+                "group by film_id, film_name, film_description, film_release_date, film_duration, film_rating \n" +
+                "order by cnt desc\n" +
+                "limit ?) as topf \n" +
                 "left join film_genres as fg on topf.film_id=fg.film_id\n" +
                 "left join genres as g on fg.genre_id=g.id\n" +
                 "left join film_likes as fl on topf.film_id=fl.film_id " +

@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.convert.ConversionService;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.LongIdDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.time.Duration;
 import java.time.LocalDate;
