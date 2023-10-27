@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.DirectorStorage;
 import ru.yandex.practicum.filmorate.storages.FilmStorage;
 import ru.yandex.practicum.filmorate.storages.GenreStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
@@ -36,6 +37,9 @@ class FilmServiceImplTest {
 
     @Mock
     private UserStorage userStorage;
+
+    @Mock
+    private DirectorStorage directorStorage;
 
     @InjectMocks
     private FilmServiceImpl filmService;
