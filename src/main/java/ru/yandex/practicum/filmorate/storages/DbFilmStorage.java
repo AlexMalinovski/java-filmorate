@@ -179,6 +179,44 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByDirector(long directorId, String sort) {
+
+        String sql;
+        if (sort.equals("likes")) {
+            sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id,  dir.id as director_id, dir.name as director_name \n" +
+                    "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
+                    "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +
+                    "count(fl.user_id) as cnt\n" +
+                    "from films as f left join film_likes as fl on f.id=fl.film_id \n" +
+                    "group by film_id, film_name, film_description, film_release_date, film_duration, film_rating \n" +
+                    "order by cnt desc ) as topf \n" +
+                    "left join film_genres as fg on topf.film_id=fg.film_id\n" +
+                    "left join genres as g on fg.genre_id=g.id\n" +
+                    "left join film_likes as fl on topf.film_id=fl.film_id " +
+                    "left join film_directors as fdir on topf.film_id=fdir.film_id " +
+                    "left join directors as dir on fdir.director_id=dir.id " +
+                    "where dir.id = ?";
+        } else {
+            sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id,  dir.id as director_id, dir.name as director_name \n" +
+                    "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
+                    "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +
+                    "extract(year from cast(f.release_date as date)) as years \n" +
+                    "from films as f left join film_likes as fl on f.id=fl.film_id \n" +
+                    "group by film_id, film_name, film_description, film_release_date, film_duration, film_rating \n" +
+                    "order by years asc ) as topf \n" +
+                    "left join film_genres as fg on topf.film_id=fg.film_id\n" +
+                    "left join genres as g on fg.genre_id=g.id\n" +
+                    "left join film_likes as fl on topf.film_id=fl.film_id " +
+                    "left join film_directors as fdir on topf.film_id=fdir.film_id " +
+                    "left join directors as dir on fdir.director_id=dir.id " +
+                    "where dir.id = ?";
+        }
+
+        List<Film> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), directorId);
+        return mapFilmQueryResult(queryResult);
+    }
+
+    @Override
     public void createFilmLike(long filmId, long userId) {
         Map<String, Object> row = new HashMap<>();
         row.put("film_id", filmId);

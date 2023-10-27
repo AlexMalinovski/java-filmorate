@@ -144,6 +144,21 @@ public class FilmController {
         return ResponseEntity.ok(filmsDto);
     }
 
+    @GetMapping(path = "/films/director/{directorId}")
+    public ResponseEntity<List<CreatedFilmDto>> getFilmsByDirector(@RequestParam String sortBy,
+                                                                   @PathVariable long directorId) {
+        if (directorId <= 0 || sortBy.isBlank() || sortBy.isEmpty()) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getFilmsByDirector(directorId, sortBy)
+                .stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        log.debug("Получен список фильмов режиссера с id = {}, отсортированный по {}", directorId, sortBy);
+        return ResponseEntity.ok(filmsDto);
+    }
+
     @GetMapping("/genres")
     public ResponseEntity<List<CreatedGenreDto>> getGenres() {
         List<CreatedGenreDto> genres = filmService.getGenres()

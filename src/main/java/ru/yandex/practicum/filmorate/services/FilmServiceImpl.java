@@ -187,6 +187,18 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> getFilmsByDirector(long directorId, String sort) {
+        if (!(sort.equals("likes") || sort.equals("year"))) {
+            throw new IllegalArgumentException("Задана несуществующая сортировка");
+        }
+
+        directorStorage.getDirectorById(directorId)
+                .orElseThrow(() -> new NotFoundException("Не найден режиссер с id:" + directorId));
+
+        return filmStorage.getFilmsByDirector(directorId, sort);
+    }
+
+    @Override
     public List<Genre> getGenres() {
         return genreStorage.getAllGenres();
     }
