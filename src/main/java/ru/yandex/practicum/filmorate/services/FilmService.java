@@ -28,7 +28,7 @@ public interface FilmService {
     Film unlikeFilm(long filmId, long userId) throws NotFoundException;
 
     @NonNull
-    List<Film> getMostPopularFilms(int count);
+    List<Film> getMostPopularFilms(int count, Long genreId, Integer year);
 
     @NonNull
     List<Genre> getGenres();

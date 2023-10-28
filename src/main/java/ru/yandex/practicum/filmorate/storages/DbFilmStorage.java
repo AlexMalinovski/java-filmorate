@@ -138,22 +138,60 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getMostPopularFilms(int count) {
-        String sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id \n" +
-                "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
-                    "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +
-                    "count(fl.user_id) as cnt\n" +
-                    "from films as f left join film_likes as fl on f.id=fl.film_id\n" +
-                    "group by film_id, film_name, film_description, film_release_date, film_duration, film_rating\n" +
-                    "order by cnt desc\n" +
-                    "limit ?) as topf \n" +
-                "left join film_genres as fg on topf.film_id=fg.film_id\n" +
-                "left join genres as g on fg.genre_id=g.id\n" +
-                "left join film_likes as fl on topf.film_id=fl.film_id";
+    public List<Film> getMostPopularFilms(int count, Long genreId, Integer year) {
+        List<Film> popularMovies = new ArrayList<>();
+        if (genreId == null && year == null) {
+            String sqlQuery = "select * from films "
+                    + "left join film_likes on film_likes.film_id = films.film_id "
+                    + "group by films.film_id "
+                    + "order by count (film_likes.film_id) desc "
+                    + "limit "
+                    + count;
+            popularMovies = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
+            return mapFilmQueryResult(popularMovies);
+        }
+        if (genreId != null && year == null) {
+            String sqlQuery = "select * from films "
+                    + "left join film_likes on film_likes.film_id = films.id "
+                    + "join film_genres on films.id = film_genres.film_id "
+                    + "where film_genres.genre_id = " + genreId + " "
+                    + "group by films.id "
+                    + "order by count (film_likes.film_id) desc "
+                    + "limit "
+                    + count;
 
-        List<Film> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
-        return mapFilmQueryResult(queryResult);
+            popularMovies = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
+            return mapFilmQueryResult(popularMovies);
+        }
+        if (genreId != null && year != null) {
+            String sqlQuery = "select * from films "
+                    + "left join film_likes on film_likes.film_id = films.id "
+                    + "join film_genres on films.id = film_genres.film_id "
+                    + "where film_genres.genre_id = " + genreId
+                    + " and (extract(year from cast(films.release_date as date))) = " + year
+                    + "group by films.id "
+                    + "order by count (film_likes.film_id) desc "
+                    + "limit "
+                    + count;
+
+            popularMovies = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
+            return mapFilmQueryResult(popularMovies);
+        }
+        if (genreId == null && year != null) {
+            String sqlQuery = "select * from films "
+                    + "left join film_likes on film_likes.film_id = films.id "
+                    + "where (extract(year from cast(films.release_date as date))) = " + year
+                    + "group by films.id "
+                    + "order by count (film_likes.film_id) desc "
+                    + "limit "
+                    + count;
+
+            popularMovies = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
+            return mapFilmQueryResult(popularMovies);
+        }
+        return  popularMovies;
     }
+
 
     @Override
     public void createFilmLike(long filmId, long userId) {
