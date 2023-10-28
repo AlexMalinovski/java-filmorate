@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmLike;
@@ -24,6 +25,7 @@ public class SimpleRecommendationService implements RecommendationService {
     private final UserStorage userStorage;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getRecommendations(final long id) {
         final int maxUsersCheck = 2;
         userStorage.getUserById(id)

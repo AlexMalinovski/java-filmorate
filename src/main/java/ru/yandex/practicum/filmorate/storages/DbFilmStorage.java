@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -202,6 +203,13 @@ public class DbFilmStorage implements FilmStorage {
         String sql = "select film_id, user_id from film_likes";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilmLike(rs));
+    }
+
+    @Override
+    public Set<Long> getUserFilmLikes(long userId) {
+        String sql = "select film_id from film_likes where user_id=?";
+
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("film_id"), userId));
     }
 
     @Override

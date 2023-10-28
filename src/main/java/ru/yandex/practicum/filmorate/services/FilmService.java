@@ -35,4 +35,7 @@ public interface FilmService {
 
     @NonNull
     Optional<Genre> getGenreById(long id);
+
+    @NonNull
+    List<Film> getCommonFilms(long userId, long friendId);
 }
