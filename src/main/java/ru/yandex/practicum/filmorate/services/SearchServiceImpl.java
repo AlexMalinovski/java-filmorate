@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storages.DirectorStorage;
 import ru.yandex.practicum.filmorate.storages.FilmStorage;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +56,8 @@ public class SearchServiceImpl implements SearchService {
         films.addAll(getFilmsByDirectorsName(str));
         films.addAll(getFilmsByTitle(str));
 
-        return new ArrayList<>(films);
+        return films.stream()
+                .sorted(Comparator.comparingLong(Film::getId).reversed())
+                .collect(Collectors.toList());
     }
 }
