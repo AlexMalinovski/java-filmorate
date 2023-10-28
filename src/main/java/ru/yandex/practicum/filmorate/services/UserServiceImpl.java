@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.FeedStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
 import java.util.HashSet;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
 
     @Override
     public List<User> getUsers() {
@@ -97,5 +100,12 @@ public class UserServiceImpl implements UserService {
         HashSet<User> otherFriends = new HashSet<>(userStorage.getUserFriends(otherId));
         commonFriends.retainAll(otherFriends);
         return List.copyOf(commonFriends);
+    }
+
+    @Override
+    public List<Event> getFeedByUserId(Long id) throws NotFoundException {
+        final User user = userStorage.getUserById(id)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
+        return feedStorage.getFeedByUser(user);
     }
 }

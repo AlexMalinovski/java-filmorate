@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.User;
 
@@ -25,6 +27,7 @@ import java.util.Set;
 public class DbUserStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final AppProperties appProperties;
+    private final FeedStorage feedStorage;
 
     private User makeUser(ResultSet rs) throws SQLException {
         User user = User.builder()
@@ -143,12 +146,15 @@ public class DbUserStorage implements UserStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("user_friends");
         simpleJdbcInsert.execute(row);
+        feedStorage.addEvent(userId, friendId, EventType.FRIEND, Operation.ADD);
+
     }
 
     @Override
     public void removeFriend(long userId, long friendId) {
         String sql = "delete from user_friends where user_id=? and friend_id=?";
         jdbcTemplate.update(sql, userId, friendId);
+        feedStorage.addEvent(userId, friendId, EventType.FRIEND, Operation.REMOVE);
     }
 
     @Override

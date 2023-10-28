@@ -6,10 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.models.*;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
-import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmRating;
-import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +27,7 @@ import java.util.Set;
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final AppProperties appProperties;
+    private final FeedStorage feedStorage;
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
         return Genre.builder()
@@ -164,12 +163,15 @@ public class DbFilmStorage implements FilmStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film_likes");
         simpleJdbcInsert.execute(row);
+
+        feedStorage.addEvent(userId, filmId, EventType.LIKE, Operation.ADD);
     }
 
     @Override
     public void removeFilmLike(long filmId, long userId) {
         String sql = "delete from film_likes where film_id=? and user_id=?";
         jdbcTemplate.update(sql, filmId, userId);
+        feedStorage.addEvent(userId, filmId, EventType.LIKE, Operation.REMOVE);
     }
 
     @Override

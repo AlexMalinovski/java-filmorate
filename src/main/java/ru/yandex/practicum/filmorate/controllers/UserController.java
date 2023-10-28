@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.CreatedEventDto;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
@@ -158,5 +159,17 @@ public class UserController {
                 .map(u -> conversionService.convert(u, CreatedUserDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping(path = "/{id}/feed")
+    public ResponseEntity<List<CreatedEventDto>> getFeedByUserId(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        List<CreatedEventDto> feed = userService.getFeedByUserId(id)
+                .stream()
+                .map(u -> conversionService.convert(u, CreatedEventDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(feed);
     }
 }
