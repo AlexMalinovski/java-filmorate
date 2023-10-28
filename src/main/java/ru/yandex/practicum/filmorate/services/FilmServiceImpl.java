@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storages.DirectorStorage;
@@ -187,10 +188,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getFilmsByDirector(long directorId, String sort) {
-        if (!(sort.equals("likes") || sort.equals("year"))) {
-            throw new IllegalArgumentException("Задана несуществующая сортировка");
-        }
+    public List<Film> getFilmsByDirector(long directorId, FilmSort sort) {
 
         directorStorage.getDirectorById(directorId)
                 .orElseThrow(() -> new NotFoundException("Не найден режиссер с id:" + directorId));

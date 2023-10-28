@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.time.Duration;
@@ -117,7 +118,7 @@ class DbFilmStorageTest {
     @Test
     @Sql({"/test-data.sql"})
     void getFilmsByDirector() {
-        var actual = filmStorage.getFilmsByDirector(1L, "likes");
+        var actual = filmStorage.getFilmsByDirector(1L, FilmSort.LIKES);
 
         assertEquals(1, actual.size());
         assertEquals(1L, actual.get(0).getId());
