@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
+import ru.yandex.practicum.filmorate.models.FilmLike;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
@@ -34,6 +36,10 @@ public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final AppProperties appProperties;
     private final FeedStorage feedStorage;
+
+    private FilmLike makeFilmLike(ResultSet rs) throws SQLException {
+        return new FilmLike(rs.getLong("film_id"), rs.getLong("user_id"));
+    }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
         return Genre.builder()
@@ -163,6 +169,26 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByIds(Set<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+        String sql = "select f.id as film_id, f.name as film_name, f.description as film_description, " +
+                "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, " +
+                "g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id " +
+                "from films as f " +
+                "left join film_genres as fg on f.id=fg.film_id " +
+                "left join genres as g on fg.genre_id=g.id " +
+                "left join film_likes as fl on f.id=fl.film_id " +
+                "where f.id in (%s)";
+        List<Film> queryResult = jdbcTemplate.query(
+                String.format(sql, inSql),
+                (rs, rowNum) -> makeFilm(rs),
+                ids.toArray()
+        );
+
+        return mapFilmQueryResult(queryResult);
+    }
+
+    @Override
     public List<Film> getMostPopularFilms(int count) {
         String sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id,  dir.id as director_id, dir.name as director_name \n" +
                 "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
@@ -238,6 +264,13 @@ public class DbFilmStorage implements FilmStorage {
         String sql = "delete from film_likes where film_id=? and user_id=?";
         jdbcTemplate.update(sql, filmId, userId);
         feedStorage.addEvent(userId, filmId, EventType.LIKE, Operation.REMOVE);
+    }
+
+    @Override
+    public List<FilmLike> getAllFilmLikes() {
+        String sql = "select film_id, user_id from film_likes";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilmLike(rs));
     }
 
     @Override
