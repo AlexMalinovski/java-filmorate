@@ -154,7 +154,12 @@ public class FilmController {
     @GetMapping(path = "/films/director/{directorId}")
     public ResponseEntity<List<CreatedFilmDto>> getFilmsByDirector(@RequestParam String sortBy,
                                                                    @PathVariable long directorId) {
-        FilmSort sort = FilmSort.valueOf(sortBy.toUpperCase());
+        FilmSort sort;
+        try {
+            sort = FilmSort.valueOf(sortBy.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
         if (directorId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
