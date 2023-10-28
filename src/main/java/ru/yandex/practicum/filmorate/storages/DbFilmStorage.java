@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.*;
@@ -182,10 +183,10 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsByDirector(long directorId, String sort) {
+    public List<Film> getFilmsByDirector(long directorId, FilmSort sort) {
 
         String sql;
-        if (sort.equals("likes")) {
+        if (sort.equals(FilmSort.LIKES)) {
             sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id,  dir.id as director_id, dir.name as director_name \n" +
                     "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
                     "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +

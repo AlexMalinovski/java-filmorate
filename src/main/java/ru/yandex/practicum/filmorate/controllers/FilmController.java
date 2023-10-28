@@ -20,6 +20,7 @@ import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
@@ -151,11 +152,12 @@ public class FilmController {
     @GetMapping(path = "/films/director/{directorId}")
     public ResponseEntity<List<CreatedFilmDto>> getFilmsByDirector(@RequestParam String sortBy,
                                                                    @PathVariable long directorId) {
-        if (directorId <= 0 || sortBy.isBlank() || sortBy.isEmpty()) {
+        FilmSort sort = FilmSort.valueOf(sortBy.toUpperCase());
+        if (directorId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
 
-        List<CreatedFilmDto> filmsDto = filmService.getFilmsByDirector(directorId, sortBy)
+        List<CreatedFilmDto> filmsDto = filmService.getFilmsByDirector(directorId, sort)
                 .stream()
                 .map(f -> conversionService.convert(f, CreatedFilmDto.class))
                 .collect(Collectors.toList());
