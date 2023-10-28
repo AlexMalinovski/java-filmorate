@@ -23,7 +23,7 @@ class DirectorGenericConverterTest {
     private ConversionService conversionService;
 
     @Test
-    public void updateDirectorDto_to_Director_isConvertible() {
+    public void updateDirectorDto_to_director_isConvertible() {
         UpdateDirectorDto dto = UpdateDirectorDto.builder()
                 .id(1L)
                 .name("name")
@@ -47,7 +47,7 @@ class DirectorGenericConverterTest {
     }
 
     @Test
-    public void DirectorDto_to_Director_isConvertible() {
+    public void directorDto_to_director_isConvertible() {
         DirectorDto dto = new DirectorDto(1L, "name");
         Director director = conversionService.convert(dto, Director.class);
         assertNotNull(director);
