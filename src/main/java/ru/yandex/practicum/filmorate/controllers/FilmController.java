@@ -22,6 +22,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.SearchService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @RestController
 public class FilmController {
     private final FilmService filmService;
+    private final SearchService searchService;
     private final ConversionService conversionService;
 
     @GetMapping("/films")
@@ -168,6 +170,49 @@ public class FilmController {
                 .collect(Collectors.toList());
         log.debug("Получен список фильмов режиссера с id = {}, отсортированный по {}", directorId, sortBy);
         return ResponseEntity.ok(filmsDto);
+    }
+
+    @GetMapping(path = "/films/search")
+    public ResponseEntity<List<CreatedFilmDto>> getFilmsBySearch(@RequestParam(value = "query", required = false, defaultValue = "popular") String str,
+                                                                 @RequestParam(value = "by", required = false, defaultValue = "nothing") String by) {
+
+        List<CreatedFilmDto> filmsDto;
+        if (str.equals("popular")) {
+            filmsDto = filmService.getMostPopularFilms(10)
+                    .stream()
+                    .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                    .collect(Collectors.toList());
+            log.debug("Получены 10 популярных фильмов");
+            return ResponseEntity.ok(filmsDto);
+        }
+
+        switch (by) {
+            case "director":
+                filmsDto = searchService.getFilmsByDirectorsName(str)
+                        .stream()
+                        .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                        .collect(Collectors.toList());
+                log.debug("Получены фильмы по имени режиссера");
+                return ResponseEntity.ok(filmsDto);
+            case "title":
+                filmsDto = searchService.getFilmsByTitle(str)
+                        .stream()
+                        .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                        .collect(Collectors.toList());
+                log.debug("Получены фильмы по названию");
+                return ResponseEntity.ok(filmsDto);
+            case "director,title":
+            case "title,director":
+                filmsDto = searchService.getFilmsByDirectorAndTitle(str)
+                        .stream()
+                        .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                        .collect(Collectors.toList());
+                log.debug("Получены фильмы по имени режиссера и названию");
+                return ResponseEntity.ok(filmsDto);
+            default:
+                throw new IllegalArgumentException("Некорректный параметр поиска");
+        }
+
     }
 
     @GetMapping("/genres")
