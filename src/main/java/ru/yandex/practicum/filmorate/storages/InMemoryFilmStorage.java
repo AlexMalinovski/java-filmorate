@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmLike;
 
 import java.util.Comparator;
 import java.util.List;
@@ -57,6 +58,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByIds(Set<Long> ids) {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
     public List<Film> getMostPopularFilms(int count) {
         return films.values()
                 .stream()
@@ -80,6 +86,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             film.removeLike(userId);
             return film;
         });
+    }
+
+    @Override
+    public List<FilmLike> getAllFilmLikes() {
+        throw new IllegalStateException("Not implemented");
     }
 
     @Override

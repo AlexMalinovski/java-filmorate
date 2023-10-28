@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -106,6 +107,15 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void getFilmsByIds() {
+        var actual = filmStorage.getFilmsByIds(Set.of(1L, 2L, 2000L));
+
+        assertNotNull(actual);
+        assertEquals(2, actual.size());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void getMostPopularFilms() {
         var actual = filmStorage.getMostPopularFilms(2);
 
@@ -139,6 +149,15 @@ class DbFilmStorageTest {
                     assertThat(obj).hasFieldOrPropertyWithValue("id", 1L);
                     assertThat(obj).hasFieldOrPropertyWithValue("likes", Set.of());
                 });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getAllFilmLikes() {
+        var actual = filmStorage.getAllFilmLikes();
+
+        assertNotNull(actual);
+        assertEquals(6, actual.size());
     }
 
     @Test

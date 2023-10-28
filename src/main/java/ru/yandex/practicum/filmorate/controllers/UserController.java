@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.RecommendationService;
 import ru.yandex.practicum.filmorate.services.UserService;
 
 import javax.validation.Valid;
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final ConversionService conversionService;
+
+    private final RecommendationService recommendationService;
 
     @GetMapping
     public ResponseEntity<List<CreatedUserDto>> getUsers() {
@@ -158,5 +162,18 @@ public class UserController {
                 .map(u -> conversionService.convert(u, CreatedUserDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping(path = "/{id}/recommendations")
+    public ResponseEntity<List<CreatedFilmDto>> getRecommendations(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+
+        List<CreatedFilmDto> films = recommendationService.getRecommendations(id)
+                .stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(films);
     }
 }
