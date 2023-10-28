@@ -35,11 +35,11 @@ class SearchServiceImplTest {
 
     @Test
     void getFilmsByTitle_whenNotFound_thenReturnEmptyList() {
-        when(filmStorage.getAllFilms()).thenReturn(new ArrayList<>());
+        when(filmStorage.getFilmsByTitle("some title")).thenReturn(new ArrayList<>());
 
         List<Film> actual = searchService.getFilmsByTitle("some title");
 
-        verify(filmStorage).getAllFilms();
+        verify(filmStorage).getFilmsByTitle("some title");
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
     }
@@ -54,11 +54,11 @@ class SearchServiceImplTest {
                 .id(2L)
                 .name("need")
                 .build();
-        when(filmStorage.getAllFilms()).thenReturn(List.of(film, secondFilm));
+        when(filmStorage.getFilmsByTitle("need")).thenReturn(List.of(film, secondFilm));
 
         List<Film> actual = searchService.getFilmsByTitle("need");
 
-        verify(filmStorage).getAllFilms();
+        verify(filmStorage).getFilmsByTitle("need");
         assertNotNull(actual);
         assertFalse(actual.isEmpty());
         assertEquals(1L, actual.get(0).getId());
@@ -68,11 +68,11 @@ class SearchServiceImplTest {
     @Test
     void getFilmsByDirectorsName_whenNotFound_thenReturnEmptyList() {
         Director director = Director.builder().id(1L).name("newDirector").build();
-        when(directorStorage.getAllDirectors()).thenReturn(new ArrayList<>());
+        when(directorStorage.getDirectorsByName("newdirect")).thenReturn(new ArrayList<>());
 
         List<Film> actual = searchService.getFilmsByDirectorsName("newDirect");
 
-        verify(directorStorage).getAllDirectors();
+        verify(directorStorage).getDirectorsByName("newdirect");
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
     }
@@ -90,12 +90,12 @@ class SearchServiceImplTest {
                 .name("need")
                 .directors(Set.of(director))
                 .build();
-        when(directorStorage.getAllDirectors()).thenReturn(List.of(director));
+        when(directorStorage.getDirectorsByName("new")).thenReturn(List.of(director));
         when(filmStorage.getFilmsByDirector(director.getId(), FilmSort.LIKES)).thenReturn(List.of(film, secondFilm));
 
         List<Film> actual = searchService.getFilmsByDirectorsName("new");
 
-        verify(directorStorage).getAllDirectors();
+        verify(directorStorage).getDirectorsByName("new");
         verify(filmStorage).getFilmsByDirector(director.getId(), FilmSort.LIKES);
         assertNotNull(actual);
         assertFalse(actual.isEmpty());

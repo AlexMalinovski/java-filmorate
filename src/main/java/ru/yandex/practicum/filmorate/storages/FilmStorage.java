@@ -24,6 +24,8 @@ public interface FilmStorage {
 
     List<Film> getFilmsByDirector(long directorId, FilmSort sort);
 
+    List<Film> getFilmsByTitle(String title);
+
     void createFilmLike(long filmId, long userId);
 
     void removeFilmLike(long filmId, long userId);

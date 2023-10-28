@@ -19,4 +19,6 @@ public interface DirectorStorage {
     List<Director> getDirectorsById(@NonNull Set<Long> directorsId);
 
     void deleteDirectorById(long id);
+
+    List<Director> getDirectorsByName(String name);
 }
