@@ -78,7 +78,6 @@ class DirectorServiceImplTest {
     void updateDirector_ifFounded_thenReturnUpdatedOptional() {
         var expected = Director.builder().id(1L).name("name").build();
         when(directorStorage.updateDirector(expected)).thenReturn(Optional.of(expected));
-        when(directorStorage.getDirectorById(expected.getId())).thenReturn(Optional.of(expected));
 
         var actual = directorService.updateDirector(expected);
 
