@@ -186,32 +186,11 @@ public class FilmController {
             return ResponseEntity.ok(filmsDto);
         }
 
-        switch (by) {
-            case "director":
-                filmsDto = searchService.getFilmsByDirectorsName(str)
-                        .stream()
-                        .map(f -> conversionService.convert(f, CreatedFilmDto.class))
-                        .collect(Collectors.toList());
-                log.debug("Получены фильмы по имени режиссера");
-                return ResponseEntity.ok(filmsDto);
-            case "title":
-                filmsDto = searchService.getFilmsByTitle(str)
-                        .stream()
-                        .map(f -> conversionService.convert(f, CreatedFilmDto.class))
-                        .collect(Collectors.toList());
-                log.debug("Получены фильмы по названию");
-                return ResponseEntity.ok(filmsDto);
-            case "director,title":
-            case "title,director":
-                filmsDto = searchService.getFilmsByDirectorAndTitle(str)
-                        .stream()
-                        .map(f -> conversionService.convert(f, CreatedFilmDto.class))
-                        .collect(Collectors.toList());
-                log.debug("Получены фильмы по имени режиссера и названию");
-                return ResponseEntity.ok(filmsDto);
-            default:
-                throw new IllegalArgumentException("Некорректный параметр поиска");
-        }
+       filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
+               .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+               .collect(Collectors.toList());
+        log.debug("Выполнен поиск фильмов по {} c запросом {}", by, str);
+        return ResponseEntity.ok(filmsDto);
 
     }
 

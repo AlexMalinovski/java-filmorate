@@ -218,6 +218,27 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByTitle(String title) {
+
+        String titleForQuery = "%" + title + "%";
+        String sql = "select f.id as film_id, f.name as film_name, f.description as film_description, " +
+                "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, " +
+                "g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id, " +
+                "dir.id as director_id, dir.name as director_name " +
+                "from (select * from films ) as f " +
+                "left join film_genres as fg on f.id=fg.film_id " +
+                "left join genres as g on fg.genre_id=g.id " +
+                "left join film_likes as fl on f.id=fl.film_id " +
+                "left join film_directors as fdir on f.id = fdir.film_id " +
+                "left join directors as dir on fdir.director_id=dir.id " +
+                "where lower(f.name) like ? " +
+                "order by film_id";
+
+        List<Film> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), titleForQuery);
+        return mapFilmQueryResult(queryResult);
+    }
+
+    @Override
     public void createFilmLike(long filmId, long userId) {
         Map<String, Object> row = new HashMap<>();
         row.put("film_id", filmId);

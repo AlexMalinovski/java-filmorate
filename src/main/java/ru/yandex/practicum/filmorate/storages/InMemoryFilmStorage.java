@@ -73,6 +73,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByTitle(String title) {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
     public void createFilmLike(long filmId, long userId) {
         films.computeIfPresent(filmId, (id, film) -> {
             film.addLike(userId);

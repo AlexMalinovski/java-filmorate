@@ -90,5 +90,15 @@ public class DbDirectorStorage implements DirectorStorage {
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public List<Director> getDirectorsByName(String name) {
+        String correctNameToQuery = "%" + name + "%";
+
+        String sql = "select id as director_id, name as director_name from directors " +
+                "where lower(name) like ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeDirector(rs), correctNameToQuery);
+    }
+
 
 }

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmSort;
@@ -25,18 +26,14 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public List<Film> getFilmsByTitle(String title) {
         String lowCaseTitle = title.toLowerCase();
-        return filmStorage.getAllFilms().stream()
-                .filter(f -> f.getName().toLowerCase().contains(lowCaseTitle))
-                .collect(Collectors.toList());
+        return filmStorage.getFilmsByTitle(lowCaseTitle);
 
     }
 
     @Override
     public List<Film> getFilmsByDirectorsName(String name) {
         String lowCaseName = name.toLowerCase();
-        List<Director> needDirectors = directorStorage.getAllDirectors().stream()
-                .filter(d -> d.getName().toLowerCase().contains(lowCaseName))
-                .collect(Collectors.toList());
+        List<Director> needDirectors = directorStorage.getDirectorsByName(lowCaseName);
 
         List<Film> films = new ArrayList<>();
 
@@ -59,5 +56,20 @@ public class SearchServiceImpl implements SearchService {
         return films.stream()
                 .sorted(Comparator.comparingLong(Film::getId).reversed())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getFilmsBySearchParams(String by, String query) {
+        switch (by) {
+            case "director":
+                return getFilmsByDirectorsName(query);
+            case "title":
+                return getFilmsByTitle(query);
+            case "director,title":
+            case "title,director":
+                return getFilmsByDirectorAndTitle(query);
+            default:
+                throw new NotFoundException("Некорректный параметр поиска");
+        }
     }
 }

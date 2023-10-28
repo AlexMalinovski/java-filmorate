@@ -16,4 +16,6 @@ public interface SearchService {
 
     @NonNull
     public List<Film> getFilmsByDirectorAndTitle(String str);
+
+    List<Film> getFilmsBySearchParams(String by, String query);
 }
