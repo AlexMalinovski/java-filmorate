@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.SearchService;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.time.Duration;
@@ -39,6 +40,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FilmControllerTest {
     @MockBean
     private FilmService filmService;
+
+    @MockBean
+    private SearchService searchService;
 
     @Autowired
     private ConversionService conversionService;
