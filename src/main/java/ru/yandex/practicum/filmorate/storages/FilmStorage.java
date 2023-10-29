@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storages;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.FilmLike;
@@ -20,7 +21,7 @@ public interface FilmStorage {
 
     List<Film> getFilmsByIds(@NonNull Set<Long> ids);
 
-    List<Film> getMostPopularFilms(int count);
+    List<Film> getMostPopularFilms(int count, @Nullable Long genreId, @Nullable Integer year);
 
     List<Film> getFilmsByDirector(long directorId, FilmSort sort);
 

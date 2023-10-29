@@ -119,10 +119,40 @@ class DbFilmStorageTest {
     @Test
     @Sql({"/test-data.sql"})
     void getMostPopularFilms() {
-        var actual = filmStorage.getMostPopularFilms(2);
+        var actual = filmStorage.getMostPopularFilms(2, null, null);
 
         assertEquals(2, actual.size());
         assertEquals(3L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getMostPopularFilms_byGenre() {
+        var actual = filmStorage.getMostPopularFilms(2, 3L, null);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertEquals(2L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getMostPopularFilms_byYear() {
+        var actual = filmStorage.getMostPopularFilms(2, null, 2010);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertEquals(2L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getMostPopularFilms_byYearAndGenre() {
+        var actual = filmStorage.getMostPopularFilms(2, 3L, 2010);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertEquals(2L, actual.get(0).getId());
     }
 
     @Test

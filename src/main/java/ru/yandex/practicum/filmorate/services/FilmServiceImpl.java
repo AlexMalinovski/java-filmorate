@@ -183,8 +183,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getMostPopularFilms(int count) {
-        return filmStorage.getMostPopularFilms(count);
+    public List<Film> getMostPopularFilms(int count, Long genreId, Integer year) {
+        return filmStorage.getMostPopularFilms(count, genreId, year);
     }
 
     @Override

@@ -3,13 +3,15 @@ package ru.yandex.practicum.filmorate.storages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
-import ru.yandex.practicum.filmorate.models.FilmLike;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmLike;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
@@ -189,22 +191,30 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getMostPopularFilms(int count) {
+    public List<Film> getMostPopularFilms(int count, Long genreId, Integer year) {
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("genre_id", genreId)
+                .addValue("count", count)
+                .addValue("year", year);
+
         String sql = "select topf.*, g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id,  dir.id as director_id, dir.name as director_name \n" +
                 "from (select f.id as film_id, f.name as film_name, f.description as film_description, \n" +
                 "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, \n" +
                 "count(fl.user_id) as cnt\n" +
                 "from films as f left join film_likes as fl on f.id=fl.film_id \n" +
+                "where (:year is null or extract(year from f.release_date)=:year) and " +
+                "((:genre_id is null) or (:genre_id in (select cfg.genre_id from film_genres as cfg where cfg.film_id=f.id))) \n" +
                 "group by film_id, film_name, film_description, film_release_date, film_duration, film_rating \n" +
                 "order by cnt desc\n" +
-                "limit ?) as topf \n" +
+                "limit :count) as topf \n" +
                 "left join film_genres as fg on topf.film_id=fg.film_id\n" +
                 "left join genres as g on fg.genre_id=g.id\n" +
                 "left join film_likes as fl on topf.film_id=fl.film_id " +
                 "left join film_directors as fdir on topf.film_id=fdir.film_id " +
                 "left join directors as dir on fdir.director_id=dir.id ";
 
-        List<Film> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
+        List<Film> queryResult = namedParameterJdbcTemplate.query(sql, namedParameters, (rs, rowNum) -> makeFilm(rs));
         return mapFilmQueryResult(queryResult);
     }
 
