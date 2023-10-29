@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.services;
 import org.springframework.lang.NonNull;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Event;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.List;
@@ -34,5 +36,8 @@ public interface UserService {
     List<User> getCommonFriends(long id, long otherId) throws NotFoundException;
 
     @NonNull
-    List<Event> getFeedByUserId(Long id) throws NotFoundException;
+    List<Event> getFeedByUserId(long id) throws NotFoundException;
+
+    @NonNull
+    Event addEvent(long userId, long entityId, EventType et, Operation op) throws NotFoundException;
 }

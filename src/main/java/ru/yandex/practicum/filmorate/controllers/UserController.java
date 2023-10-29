@@ -18,6 +18,8 @@ import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.services.RecommendationService;
 import ru.yandex.practicum.filmorate.services.UserService;
@@ -111,6 +113,7 @@ public class UserController {
         }
         User currentUser = userService.addAsFriend(id, friendId);
         log.debug("Пользователь id={} добавил в друзья пользователя id={}", id, friendId);
+        userService.addEvent(id, friendId, EventType.FRIEND, Operation.ADD);
         return ResponseEntity.ok(conversionService.convert(currentUser, CreatedUserDto.class));
     }
 
@@ -129,6 +132,7 @@ public class UserController {
         }
         User currentUser = userService.removeFromFriends(id, friendId);
         log.debug("Пользователь id={} удалил из друзей пользователя id={}", id, friendId);
+        userService.addEvent(id, friendId, EventType.FRIEND, Operation.REMOVE);
         return ResponseEntity.ok(conversionService.convert(currentUser, CreatedUserDto.class));
     }
 
