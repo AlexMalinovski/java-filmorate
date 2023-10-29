@@ -105,6 +105,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Set<Long> getUserFilmLikes(long userId) {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
     public void addFilmGenres(long id, Set<Long> foundGenresId) {
         throw new IllegalStateException("Not implemented");
     }

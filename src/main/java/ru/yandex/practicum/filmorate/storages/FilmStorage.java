@@ -32,6 +32,8 @@ public interface FilmStorage {
 
     List<FilmLike> getAllFilmLikes();
 
+    Set<Long> getUserFilmLikes(long userId);
+
     void addFilmGenres(long id, @NonNull Set<Long> foundGenresId);
 
     void addFilmDirectors(long id, Set<Long> foundDirectors);

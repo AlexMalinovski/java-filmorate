@@ -286,4 +286,57 @@ class FilmServiceImplTest {
         assertEquals(1, actual.size());
         assertSame(expected, actual.get(0));
     }
+
+    @Test
+    void getCommonFilms_ifNotFoundUser_thenThrowNotFoundException() {
+        final long userId = 1L;
+        final long friendId = 2L;
+        final Film film = Film.builder().id(1L).name("name").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> filmService.getCommonFilms(userId, friendId));
+
+        verify(userStorage).getUserById(userId);
+    }
+
+    @Test
+    void getCommonFilms_ifNotFoundFriend_thenThrowNotFoundException() {
+        final long userId = 1L;
+        final long friendId = 2L;
+        final Film film = Film.builder().id(1L).name("name").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> filmService.getCommonFilms(userId, friendId));
+
+        verify(userStorage).getUserById(friendId);
+    }
+
+    @Test
+    void getCommonFilms_returnCommonFilmsSortedByLikesDesc() {
+        final long userId = 1L;
+        final long friendId = 2L;
+        final Film film = Film.builder().id(1L).name("name").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.of(User.builder().id(friendId).build()));
+        when(filmStorage.getUserFilmLikes(userId)).thenReturn(Set.of(1L, 2L, 3L));
+        when(filmStorage.getUserFilmLikes(friendId)).thenReturn(Set.of(2L, 3L, 4L));
+        when(filmStorage.getFilmsByIds(Set.of(2L, 3L))).thenReturn(List.of(
+                Film.builder().id(2L).build(),
+                Film.builder().id(3L).likes(Set.of(2L)).build()
+        ));
+
+        List<Film> actual = filmService.getCommonFilms(userId, friendId);
+
+        verify(userStorage).getUserById(userId);
+        verify(userStorage).getUserById(friendId);
+        verify(filmStorage).getUserFilmLikes(userId);
+        verify(filmStorage).getUserFilmLikes(friendId);
+        verify(filmStorage).getFilmsByIds(Set.of(2L, 3L));
+
+        assertNotNull(actual);
+        assertEquals(2, actual.size());
+        assertEquals(3L, actual.get(0).getId());
+        assertEquals(2L, actual.get(1).getId());
+    }
 }

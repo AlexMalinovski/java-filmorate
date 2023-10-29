@@ -170,4 +170,11 @@ class FilmControllerTest {
         mockMvc.perform(get("/mpa/1"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void getCommonFilms_isAvailable() throws Exception {
+        when(filmService.getCommonFilms(anyLong(), anyLong())).thenReturn(List.of(getValidFilm()));
+        mockMvc.perform(get("/films/common?userId=1&friendId=2"))
+                .andExpect(status().isOk());
+    }
 }

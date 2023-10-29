@@ -225,4 +225,18 @@ public class FilmController {
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("Отсутствует рейтинг с id:" + id));
     }
+
+    @GetMapping("/films/common")
+    public ResponseEntity<List<CreatedFilmDto>> getCommonFilms(@RequestParam long userId,
+                                                         @RequestParam long friendId) {
+        if (friendId <= 0 || userId <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getCommonFilms(userId, friendId)
+                .stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filmsDto);
+    }
 }
