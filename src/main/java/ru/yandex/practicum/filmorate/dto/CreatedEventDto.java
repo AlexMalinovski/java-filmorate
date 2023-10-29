@@ -6,27 +6,27 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.Operation;
+import ru.yandex.practicum.filmorate.validators.ValidEventType;
+import ru.yandex.practicum.filmorate.validators.ValidOperation;
+import ru.yandex.practicum.filmorate.validators.ValidTimestamp;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
-import java.time.Instant;
 
 @Data
 @Builder
 @RequiredArgsConstructor
 public class CreatedEventDto {
 
-    @Positive
+    @Positive(message = "Id события должен быть положительным числом")
     private final Long eventId;
-    @Positive
+    @Positive(message = "Id пользователя должен быть положительным числом")
     private final Long userId;
-    @Positive
+    @Positive(message = "Id сущности, над которой происходит событие, должен быть положительным числом")
     private final Long entityId;
-    @NotNull
+    @ValidEventType
     private final EventType eventType;
-    @NotNull
+    @ValidOperation
     private final Operation operation;
-    @PastOrPresent
-    private final Instant timestamp;
+    @ValidTimestamp
+    private final Long timestamp;
 }
