@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.models.Review;
 
 import java.sql.ResultSet;
@@ -23,6 +25,7 @@ import java.util.Optional;
 @Primary
 public class DbReviewStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final FeedStorage feedStorage;
 
     private Review makeReview(ResultSet rs) throws SQLException {
         return Review.builder()
@@ -65,8 +68,10 @@ public class DbReviewStorage implements ReviewStorage {
                 .withTableName("reviews")
                 .usingGeneratedKeyColumns("id");
         final long id = simpleJdbcInsert.executeAndReturnKey(row).longValue();
-        return getReviewById(id)
+        Review savedReview = getReviewById(id)
                 .orElseThrow(() -> new IllegalStateException("Ошибка при добавлении записи в БД"));
+        feedStorage.addEvent(savedReview.getUserId(), savedReview.getId(), EventType.REVIEW, Operation.ADD);
+        return savedReview;
     }
 
     @Override
@@ -76,11 +81,21 @@ public class DbReviewStorage implements ReviewStorage {
                 reviewUpdates.getContent(),
                 reviewUpdates.isPositive(),
                 reviewUpdates.getId());
-        return getReviewById(reviewUpdates.getId());
+        Optional <Review> updatedReviewOpt = getReviewById(reviewUpdates.getId());
+        if (updatedReviewOpt.isPresent()) {
+            Review updatedReview = updatedReviewOpt.get();
+            feedStorage.addEvent(updatedReview.getUserId(), updatedReview.getId(), EventType.REVIEW, Operation.UPDATE);
+        }
+        return updatedReviewOpt;
     }
 
     @Override
     public boolean deleteReviewById(long id) {
+        Optional <Review> deletedReviewOpt = getReviewById(id);
+        if (deletedReviewOpt.isPresent()) {
+            Review deletedReview = deletedReviewOpt.get();
+            feedStorage.addEvent(deletedReview.getUserId(), deletedReview.getId(), EventType.REVIEW, Operation.REMOVE);
+        }
         String sql = "delete from reviews where id=?";
         return jdbcTemplate.update(sql, id) == 1;
     }
