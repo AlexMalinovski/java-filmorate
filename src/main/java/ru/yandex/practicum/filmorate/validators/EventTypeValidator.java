@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EventTypeValidator implements ConstraintValidator<ValidEventType, CharSequence> {
+public class EventTypeValidator implements ConstraintValidator<ValidEventType, EventType> {
 
     private List<String> acceptedValues;
 
@@ -20,11 +20,11 @@ public class EventTypeValidator implements ConstraintValidator<ValidEventType, C
     }
 
     @Override
-    public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
+    public boolean isValid(EventType value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            return false;
         }
 
-        return acceptedValues.contains(value.toString());
+        return acceptedValues.contains(value.name());
     }
 }
