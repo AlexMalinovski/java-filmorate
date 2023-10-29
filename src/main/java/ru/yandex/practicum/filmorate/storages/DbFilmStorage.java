@@ -170,11 +170,14 @@ public class DbFilmStorage implements FilmStorage {
         String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
         String sql = "select f.id as film_id, f.name as film_name, f.description as film_description, " +
                 "f.release_date as film_release_date, f.duration as film_duration, f.rating as film_rating, " +
-                "g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id " +
+                "g.id as genre_id, g.name as genre_name, fl.user_id as liked_user_id, " +
+                "d.id as director_id, d.name as director_name " +
                 "from films as f " +
                 "left join film_genres as fg on f.id=fg.film_id " +
                 "left join genres as g on fg.genre_id=g.id " +
                 "left join film_likes as fl on f.id=fl.film_id " +
+                "left join film_directors as fd on f.id = fd.film_id " +
+                "left join directors as d on fd.director_id = d.id " +
                 "where f.id in (%s)";
         List<Film> queryResult = jdbcTemplate.query(
                 String.format(sql, inSql),
