@@ -66,7 +66,7 @@ public class UserController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<CreatedUserDto> updateUserById(@PathVariable final long id,
-                                                     @Valid @RequestBody UserDto userDto) {
+                                                         @Valid @RequestBody UserDto userDto) {
         if (id <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -80,6 +80,7 @@ public class UserController {
 
     /**
      * Получить пользователя по уникальному идентификатору
+     *
      * @param id Идентификатор пользователя
      * @return CreatedFilmDto
      */
@@ -96,7 +97,8 @@ public class UserController {
 
     /**
      * Добавление в друзья
-     * @param id Идентификатор пользователя
+     *
+     * @param id       Идентификатор пользователя
      * @param friendId Идентификатор друга
      * @return CreatedUserDto пользователя
      */
@@ -113,13 +115,14 @@ public class UserController {
 
     /**
      * Удаление из друзей
-     * @param id Идентификатор пользователя
+     *
+     * @param id       Идентификатор пользователя
      * @param friendId Идентификатор друга
      * @return CreatedUserDto пользователя
      */
     @DeleteMapping(path = "/{id}/friends/{friendId}")
     public ResponseEntity<CreatedUserDto> removeFromFriends(@PathVariable long id,
-                                                      @PathVariable long friendId) {
+                                                            @PathVariable long friendId) {
         if (id <= 0 || friendId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -130,6 +133,7 @@ public class UserController {
 
     /**
      * Возвращает список друзей пользователя
+     *
      * @param id Идентификатор пользователя
      * @return список CreatedUserDto
      */
@@ -147,7 +151,8 @@ public class UserController {
 
     /**
      * Возвращает список друзей, общих с другим пользователем.
-     * @param id Идентификатор пользователя
+     *
+     * @param id      Идентификатор пользователя
      * @param otherId Идентификатор другого пользователя
      * @return список CreatedUserDto
      */

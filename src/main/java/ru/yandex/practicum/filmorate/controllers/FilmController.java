@@ -20,6 +20,7 @@ import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
@@ -64,7 +65,7 @@ public class FilmController {
 
     @PutMapping(path = "/films/{id}")
     public ResponseEntity<CreatedFilmDto> updateFilmById(@PathVariable final long id,
-                                                     @Valid @RequestBody FilmDto filmDto) {
+                                                         @Valid @RequestBody FilmDto filmDto) {
         if (id <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -78,6 +79,7 @@ public class FilmController {
 
     /**
      * Получить фильм по уникальному идентификатору
+     *
      * @param id Идентификатор фильма
      * @return CreatedFilmDto
      */
@@ -94,6 +96,7 @@ public class FilmController {
 
     /**
      * Пользователь ставит лайк фильму
+     *
      * @param filmId id фильма
      * @param userId id пользователя
      * @return CreatedFilmDto
@@ -111,13 +114,14 @@ public class FilmController {
 
     /**
      * Пользователь удаляет лайк фильму
+     *
      * @param filmId id фильма
      * @param userId id пользователя
      * @return CreatedFilmDto
      */
     @DeleteMapping(path = "/films/{filmId}/like/{userId}")
     public ResponseEntity<CreatedFilmDto> unlikeFilm(@PathVariable long filmId,
-                                                   @PathVariable long userId) {
+                                                     @PathVariable long userId) {
         if (filmId <= 0 || userId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -129,6 +133,7 @@ public class FilmController {
     /**
      * Возвращает список из первых count фильмов по количеству лайков.
      * Если значение параметра count не задано, вернёт первые 10.
+     *
      * @param count количество фильмов
      * @return список CreatedFilmDto
      */
@@ -141,6 +146,27 @@ public class FilmController {
                 .stream()
                 .map(f -> conversionService.convert(f, CreatedFilmDto.class))
                 .collect(Collectors.toList());
+        return ResponseEntity.ok(filmsDto);
+    }
+
+    @GetMapping(path = "/films/director/{directorId}")
+    public ResponseEntity<List<CreatedFilmDto>> getFilmsByDirector(@RequestParam String sortBy,
+                                                                   @PathVariable long directorId) {
+        FilmSort sort;
+        try {
+            sort = FilmSort.valueOf(sortBy.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        if (directorId <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getFilmsByDirector(directorId, sort)
+                .stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        log.debug("Получен список фильмов режиссера с id = {}, отсортированный по {}", directorId, sortBy);
         return ResponseEntity.ok(filmsDto);
     }
 
@@ -161,12 +187,12 @@ public class FilmController {
         return filmService.getGenreById(id)
                 .map(g -> conversionService.convert(g, CreatedGenreDto.class))
                 .map(ResponseEntity::ok)
-                .orElseThrow(() ->  new NotFoundException("Не найден жанр с id:" + id));
+                .orElseThrow(() -> new NotFoundException("Не найден жанр с id:" + id));
     }
 
     @GetMapping("/mpa")
     public ResponseEntity<List<FilmRating>> getFilmRatings() {
-        return  ResponseEntity.ok(List.of(FilmRating.values()));
+        return ResponseEntity.ok(List.of(FilmRating.values()));
     }
 
     @GetMapping("/mpa/{id}")

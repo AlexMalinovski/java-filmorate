@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.FilmLike;
 
 import java.util.Comparator;
@@ -73,6 +74,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByDirector(long directorId, FilmSort sort) {
+        throw new IllegalStateException("Not Implemented");
+    }
+
+    @Override
     public void createFilmLike(long filmId, long userId) {
         films.computeIfPresent(filmId, (id, film) -> {
             film.addLike(userId);
@@ -99,7 +105,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public void addFilmDirectors(long id, Set<Long> foundDirectors) {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
     public void removeFilmGenres(long id, Set<Long> genresToRemove) {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
+    public void removeFilmDirectors(long id, Set<Long> directorsToRemove) {
         throw new IllegalStateException("Not implemented");
     }
 }

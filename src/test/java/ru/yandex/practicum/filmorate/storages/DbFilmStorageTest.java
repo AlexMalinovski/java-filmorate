@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.time.Duration;
@@ -125,6 +127,15 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void getFilmsByDirector() {
+        var actual = filmStorage.getFilmsByDirector(1L, FilmSort.LIKES);
+
+        assertEquals(1, actual.size());
+        assertEquals(1L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void createFilmLike() {
         filmStorage.createFilmLike(1L, 2L);
         var actual = filmStorage.getFilmById(1L);
@@ -178,6 +189,22 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void addFilmDirectors() {
+        filmStorage.addFilmDirectors(2L, Set.of(1L));
+        var actual = filmStorage.getFilmById(2L);
+
+        assertThat(actual)
+                .isPresent()
+                .hasValueSatisfying(obj -> {
+                    assertThat(obj).hasFieldOrPropertyWithValue("id", 2L);
+                    assertThat(obj).hasFieldOrPropertyWithValue("directors", Set.of(
+                            Director.builder().id(1L).name("firstDirector").build(),
+                            Director.builder().id(3L).name("thirdDirector").build()));
+                });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void removeFilmGenres() {
         filmStorage.removeFilmGenres(1L, Set.of(1L));
         var actual = filmStorage.getFilmById(1L);
@@ -187,6 +214,20 @@ class DbFilmStorageTest {
                 .hasValueSatisfying(obj -> {
                     assertThat(obj).hasFieldOrPropertyWithValue("id", 1L);
                     assertThat(obj).hasFieldOrPropertyWithValue("genres", Set.of());
+                });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void removeFilmDirectors() {
+        filmStorage.removeFilmDirectors(2L, Set.of(3L));
+        var actual = filmStorage.getFilmById(2L);
+
+        assertThat(actual)
+                .isPresent()
+                .hasValueSatisfying(obj -> {
+                    assertThat(obj).hasFieldOrPropertyWithValue("id", 2L);
+                    assertThat(obj).hasFieldOrPropertyWithValue("directors", Set.of());
                 });
     }
 }
