@@ -38,7 +38,7 @@ public class DbFeedStorage implements FeedStorage {
         params.put("reviewType", EventType.REVIEW.name());
 
         String sql = "SELECT * FROM feed WHERE (user_id IN (:userIds) AND (event_type = :likeType OR event_type =" +
-                " :reviewType)) OR (user_id = :userId) ORDER BY timestamp DESC";
+                " :reviewType)) OR (user_id = :userId) ORDER BY timestamp";
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
         return namedParameterJdbcTemplate.query(sql, params, this::makeEvent);
     }
