@@ -14,6 +14,8 @@ import ru.yandex.practicum.filmorate.storages.FilmStorage;
 import ru.yandex.practicum.filmorate.storages.GenreStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -175,7 +177,7 @@ public class FilmServiceImpl implements FilmService {
         final Film film = filmStorage.getFilmById(filmId)
                 .orElseThrow(() -> new NotFoundException("Не найден фильм с id:" + filmId));
         final User user = userStorage.getUserById(userId)
-                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id:" + filmId));
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id:" + userId));
         if (film.removeLike(user.getId())) {
             filmStorage.removeFilmLike(filmId, userId);
         }
@@ -204,5 +206,26 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Optional<Genre> getGenreById(long id) {
         return genreStorage.getGenreById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        userStorage.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id:" + userId));
+        userStorage.getUserById(friendId)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id:" + friendId));
+
+        Set<Long> userFilmLikes = filmStorage.getUserFilmLikes(userId);
+        Set<Long> friendFilmLikes = filmStorage.getUserFilmLikes(friendId);
+        Set<Long> commonFilmLikes = new HashSet<>(userFilmLikes);
+        commonFilmLikes.retainAll(friendFilmLikes);
+        if (commonFilmLikes.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return filmStorage.getFilmsByIds(commonFilmLikes)
+                .stream()
+                .sorted(Comparator.comparingInt(Film::getNumOfLikes).reversed())
+                .collect(Collectors.toList());
     }
 }

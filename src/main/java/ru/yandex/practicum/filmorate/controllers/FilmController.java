@@ -186,9 +186,9 @@ public class FilmController {
             return ResponseEntity.ok(filmsDto);
         }
 
-        filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
-                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
-                .collect(Collectors.toList());
+       filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
+               .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+               .collect(Collectors.toList());
         log.debug("Выполнен поиск фильмов по {} c запросом {}", by, str);
         return ResponseEntity.ok(filmsDto);
 
@@ -224,5 +224,19 @@ public class FilmController {
         return FilmRating.getByIndex(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("Отсутствует рейтинг с id:" + id));
+    }
+
+    @GetMapping("/films/common")
+    public ResponseEntity<List<CreatedFilmDto>> getCommonFilms(@RequestParam long userId,
+                                                         @RequestParam long friendId) {
+        if (friendId <= 0 || userId <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getCommonFilms(userId, friendId)
+                .stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filmsDto);
     }
 }

@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmLike;
 import ru.yandex.practicum.filmorate.models.FilmSort;
+import ru.yandex.practicum.filmorate.models.FilmLike;
 
 import java.util.Comparator;
 import java.util.List;
@@ -101,6 +101,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<FilmLike> getAllFilmLikes() {
+        throw new IllegalStateException("Not implemented");
+    }
+
+    @Override
+    public Set<Long> getUserFilmLikes(long userId) {
         throw new IllegalStateException("Not implemented");
     }
 

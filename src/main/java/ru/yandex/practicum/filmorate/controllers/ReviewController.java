@@ -46,7 +46,6 @@ public class ReviewController {
 
     /**
      * Добавление нового отзыва.
-     *
      * @param reviewDto ReviewDto
      * @return CreatedReviewDto
      */
@@ -64,7 +63,6 @@ public class ReviewController {
 
     /**
      * Редактирование уже имеющегося отзыва.
-     *
      * @param updatedReviewDto UpdatedReviewDto
      * @return CreatedReviewDto
      */
@@ -80,7 +78,6 @@ public class ReviewController {
 
     /**
      * Удаление уже имеющегося отзыва.
-     *
      * @param id long ID
      * @return CreatedReviewDto
      */
@@ -97,7 +94,6 @@ public class ReviewController {
 
     /**
      * Получение отзыва по идентификатору.
-     *
      * @param id Идентификатор отзыва
      * @return CreatedReviewDto
      */
@@ -115,14 +111,13 @@ public class ReviewController {
     /**
      * пользователь ставит лайк отзыву.
      * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
-     * @param id     id отзыва
+     * @param id id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
      */
     @PutMapping(path = "/{id}/like/{userId}")
     public ResponseEntity<CreatedReviewDto> addOrUpdateLikeReview(@PathVariable long id,
-                                                                  @PathVariable long userId) {
+                                                   @PathVariable long userId) {
         if (id <= 0 || userId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -134,14 +129,13 @@ public class ReviewController {
     /**
      * пользователь ставит дизлайк отзыву.
      * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
-     * @param id     id отзыва
+     * @param id id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
      */
     @PutMapping(path = "/{id}/dislike/{userId}")
     public ResponseEntity<CreatedReviewDto> addOrUpdateDislikeReview(@PathVariable long id,
-                                                                     @PathVariable long userId) {
+                                                       @PathVariable long userId) {
         if (id <= 0 || userId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -153,14 +147,13 @@ public class ReviewController {
     /**
      * пользователь ставит лайк отзыву.
      * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
-     * @param id     id отзыва
+     * @param id id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
      */
     @DeleteMapping(path = "/{id}/like/{userId}")
     public ResponseEntity<CreatedReviewDto> deleteLikeReview(@PathVariable long id,
-                                                             @PathVariable long userId) {
+                                                       @PathVariable long userId) {
         if (id <= 0 || userId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
@@ -172,14 +165,13 @@ public class ReviewController {
     /**
      * пользователь ставит дизлайк отзыву.
      * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
-     * @param id     id отзыва
+     * @param id id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
      */
     @DeleteMapping(path = "/{id}/dislike/{userId}")
     public ResponseEntity<CreatedReviewDto> deleteDislikeReview(@PathVariable long id,
-                                                                @PathVariable long userId) {
+                                                          @PathVariable long userId) {
         if (id <= 0 || userId <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }

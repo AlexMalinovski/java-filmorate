@@ -173,6 +173,15 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void getUserFilmLikes() {
+        var actual = filmStorage.getUserFilmLikes(3L);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void addFilmGenres() {
         filmStorage.addFilmGenres(1L, Set.of(2L));
         var actual = filmStorage.getFilmById(1L);

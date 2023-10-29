@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.storages;
 
 import org.springframework.lang.NonNull;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmLike;
 import ru.yandex.practicum.filmorate.models.FilmSort;
+import ru.yandex.practicum.filmorate.models.FilmLike;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +31,8 @@ public interface FilmStorage {
     void removeFilmLike(long filmId, long userId);
 
     List<FilmLike> getAllFilmLikes();
+
+    Set<Long> getUserFilmLikes(long userId);
 
     void addFilmGenres(long id, @NonNull Set<Long> foundGenresId);
 

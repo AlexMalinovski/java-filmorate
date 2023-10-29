@@ -8,13 +8,13 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.EventType;
-import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmLike;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
+import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.Operation;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -294,6 +295,13 @@ public class DbFilmStorage implements FilmStorage {
         String sql = "select film_id, user_id from film_likes";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilmLike(rs));
+    }
+
+    @Override
+    public Set<Long> getUserFilmLikes(long userId) {
+        String sql = "select film_id from film_likes where user_id=?";
+
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("film_id"), userId));
     }
 
     @Override
