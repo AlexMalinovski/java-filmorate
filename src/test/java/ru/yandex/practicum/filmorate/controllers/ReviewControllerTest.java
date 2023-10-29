@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.dto.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.UpdatedReviewDto;
 import ru.yandex.practicum.filmorate.models.Review;
 import ru.yandex.practicum.filmorate.services.ReviewService;
+import ru.yandex.practicum.filmorate.services.UserService;
 
 import java.util.Optional;
 
@@ -33,6 +34,9 @@ class ReviewControllerTest {
 
     @MockBean
     private ReviewService reviewService;
+
+    @MockBean
+    private UserService userService;
 
     @Autowired
     private ConversionService conversionService;

@@ -7,13 +7,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Event;
+import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storages.FeedStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -293,12 +296,19 @@ class UserServiceImplTest {
     @Test
     void getFeedByUserId_ifFounded_ThenReturnFilledList() {
         var user = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        List<Long> userIds = new ArrayList<>(user.getFriends());
+        userIds.add(user.getId());
+        Map<String, Object> params = new HashMap<>();
+        params.put("userIds", userIds);
+        params.put("userId", user.getId());
+        params.put("likeType", EventType.LIKE.name());
+        params.put("reviewType", EventType.REVIEW.name());
         var expected = Event.builder().eventId(1L).userId(1L).build();
-        when(userStorage.getUserById(1L)).thenReturn(Optional.of(user));
-        when(feedStorage.getFeedByUser(any())).thenReturn(List.of(expected));
+        when(feedStorage.getUserFeed(any())).thenReturn(List.of(expected));
 
-        var actual = userService.getFeedByUserId(1L);
-        verify(feedStorage).getFeedByUser(user);
+
+        var actual = feedStorage.getUserFeed(params);
+        verify(feedStorage).getUserFeed(params);
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertSame(expected, actual.get(0));
@@ -308,12 +318,19 @@ class UserServiceImplTest {
     @Test
     void getFeedByUserId_ifNotFound_ThenReturnEmptyList() {
         var user = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        List<Long> userIds = new ArrayList<>(user.getFriends());
+        userIds.add(user.getId());
+        Map<String, Object> params = new HashMap<>();
+        params.put("userIds", userIds);
+        params.put("userId", user.getId());
+        params.put("likeType", EventType.LIKE.name());
+        params.put("reviewType", EventType.REVIEW.name());
         when(userStorage.getUserById(1L)).thenReturn(Optional.of(user));
-        when(feedStorage.getFeedByUser(any())).thenReturn(new ArrayList<>());
+        when(feedStorage.getUserFeed(any())).thenReturn(new ArrayList<>());
 
         var actual = userService.getFeedByUserId(1L);
 
-        verify(feedStorage).getFeedByUser(user);
+        verify(feedStorage).getUserFeed(params);
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
 

@@ -7,14 +7,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
-import ru.yandex.practicum.filmorate.models.EventType;
-import ru.yandex.practicum.filmorate.models.FilmLike;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmLike;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.models.Operation;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -279,15 +277,12 @@ public class DbFilmStorage implements FilmStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film_likes");
         simpleJdbcInsert.execute(row);
-
-        feedStorage.addEvent(userId, filmId, EventType.LIKE, Operation.ADD);
     }
 
     @Override
     public void removeFilmLike(long filmId, long userId) {
         String sql = "delete from film_likes where film_id=? and user_id=?";
         jdbcTemplate.update(sql, filmId, userId);
-        feedStorage.addEvent(userId, filmId, EventType.LIKE, Operation.REMOVE);
     }
 
     @Override
