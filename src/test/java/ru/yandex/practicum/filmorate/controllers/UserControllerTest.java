@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.configs.TestAppConfig;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.RecommendationService;
 import ru.yandex.practicum.filmorate.services.UserService;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 
@@ -35,6 +36,9 @@ class UserControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private RecommendationService recommendationService;
 
     @Autowired
     private ConversionService conversionService;
@@ -136,6 +140,13 @@ class UserControllerTest {
     public void getCommonFriends_isAvailable() throws Exception {
         when(userService.getCommonFriends(anyLong(), anyLong())).thenReturn(new ArrayList<>());
         mockMvc.perform(get("/users/1/friends/common/2"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getRecommendations_isAvailable() throws Exception {
+        when(recommendationService.getRecommendations(anyLong())).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/users/1/recommendations"))
                 .andExpect(status().isOk());
     }
 
