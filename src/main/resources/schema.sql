@@ -50,6 +50,6 @@ create table if not exists feed (
     entity_id int not null,
     event_type varchar(50) not null,
     operation varchar(50) not null,
-    timestamp int not null,
+    timestamp bigint not null,
     constraint "feed_pk" primary key (event_id)
 );
