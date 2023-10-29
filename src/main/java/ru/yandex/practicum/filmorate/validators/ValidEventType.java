@@ -18,6 +18,8 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = EventTypeValidator.class)
 public @interface ValidEventType {
     String message() default "Значение события может быть только LIKE, REVIEW или FRIEND";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

@@ -15,8 +15,11 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = BirthdayValidatorForString.class)
 public @interface Birthday {
     String message() default "Обязательное значение в формате по-умолчанию. Не позже текущей даты";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
+
     @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
     @Retention(RetentionPolicy.RUNTIME)
     @Documented

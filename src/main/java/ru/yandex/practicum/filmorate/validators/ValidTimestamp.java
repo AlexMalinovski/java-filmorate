@@ -16,6 +16,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidTimestamp {
     String message() default "Timestamp не должен быть больше текущего времени";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

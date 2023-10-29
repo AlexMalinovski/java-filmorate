@@ -81,7 +81,7 @@ public class DbReviewStorage implements ReviewStorage {
                 reviewUpdates.getContent(),
                 reviewUpdates.isPositive(),
                 reviewUpdates.getId());
-        Optional <Review> updatedReviewOpt = getReviewById(reviewUpdates.getId());
+        Optional<Review> updatedReviewOpt = getReviewById(reviewUpdates.getId());
         if (updatedReviewOpt.isPresent()) {
             Review updatedReview = updatedReviewOpt.get();
             feedStorage.addEvent(updatedReview.getUserId(), updatedReview.getId(), EventType.REVIEW, Operation.UPDATE);
@@ -91,7 +91,7 @@ public class DbReviewStorage implements ReviewStorage {
 
     @Override
     public boolean deleteReviewById(long id) {
-        Optional <Review> deletedReviewOpt = getReviewById(id);
+        Optional<Review> deletedReviewOpt = getReviewById(id);
         if (deletedReviewOpt.isPresent()) {
             Review deletedReview = deletedReviewOpt.get();
             feedStorage.addEvent(deletedReview.getUserId(), deletedReview.getId(), EventType.REVIEW, Operation.REMOVE);

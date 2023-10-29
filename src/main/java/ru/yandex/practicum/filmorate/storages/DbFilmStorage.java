@@ -7,14 +7,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.Director;
-import ru.yandex.practicum.filmorate.models.FilmLike;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
+import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmLike;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
-import ru.yandex.practicum.filmorate.models.*;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.sql.ResultSet;

@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.Operation;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 

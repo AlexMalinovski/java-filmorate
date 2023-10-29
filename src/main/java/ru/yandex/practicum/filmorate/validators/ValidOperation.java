@@ -17,6 +17,8 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = OperationValidator.class)
 public @interface ValidOperation {
     String message() default "Значение события может быть только REMOVE, ADD или UPDATE";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

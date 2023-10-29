@@ -186,9 +186,9 @@ public class FilmController {
             return ResponseEntity.ok(filmsDto);
         }
 
-       filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
-               .map(f -> conversionService.convert(f, CreatedFilmDto.class))
-               .collect(Collectors.toList());
+        filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
         log.debug("Выполнен поиск фильмов по {} c запросом {}", by, str);
         return ResponseEntity.ok(filmsDto);
 

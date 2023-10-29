@@ -9,5 +9,6 @@ import java.util.List;
 
 public interface FeedStorage {
     List<Event> getFeedByUser(User user);
+
     void addEvent(Long userId, Long entityId, EventType et, Operation op);
 }

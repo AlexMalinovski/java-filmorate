@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.FilmLike;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 
 import java.util.Comparator;
 import java.util.List;
