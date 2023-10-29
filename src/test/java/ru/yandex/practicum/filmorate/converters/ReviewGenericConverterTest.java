@@ -58,7 +58,7 @@ class ReviewGenericConverterTest {
 
     @Test
     public void reviewDto_to_Review_isConvertible() {
-        ReviewDto dto =  ReviewDto.builder()
+        ReviewDto dto = ReviewDto.builder()
                 .userId(1L)
                 .filmId(1L)
                 .content("content")

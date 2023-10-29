@@ -5,10 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.convert.ConversionService;
 import ru.yandex.practicum.filmorate.dto.CreatedEventDto;
-import ru.yandex.practicum.filmorate.dto.CreatedGenreDto;
 import ru.yandex.practicum.filmorate.models.Event;
 import ru.yandex.practicum.filmorate.models.EventType;
-import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.Operation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
