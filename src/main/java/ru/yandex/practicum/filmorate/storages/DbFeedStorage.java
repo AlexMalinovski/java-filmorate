@@ -45,21 +45,22 @@ public class DbFeedStorage implements FeedStorage {
                 .entityId(entityId)
                 .eventType(et)
                 .operation(op)
-                .timestamp(Instant.now())
+                .timestamp(Instant.now().toEpochMilli())
                 .build();
         String sql = "insert into feed (user_id, entity_id, event_type, operation, timestamp) values (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, event.getUserId(), event.getEntityId(), event.getEventType(), event.getOperation(),
-                event.getTimestamp().toEpochMilli());
+        jdbcTemplate.update(sql, event.getUserId(), event.getEntityId(), event.getEventType().name(),
+                event.getOperation().name(),
+                event.getTimestamp());
     }
 
-    private Event mapRowToEvent(ResultSet rs, int rowNum) throws SQLException {
+    private Event makeEvent(ResultSet rs, int rowNum) throws SQLException {
         return Event.builder()
                 .eventId(rs.getLong("event_id"))
                 .userId(rs.getLong("user_id"))
                 .entityId(rs.getLong("entity_id"))
                 .eventType(EventType.valueOf(rs.getString("event_type")))
                 .operation(Operation.valueOf(rs.getString("operation")))
-                .timestamp(rs.getTimestamp("timestamp").toInstant())
+                .timestamp(rs.getLong("timestamp"))
                 .build();
     }
 }
