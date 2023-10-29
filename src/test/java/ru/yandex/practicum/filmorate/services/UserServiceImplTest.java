@@ -6,9 +6,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.FeedStorage;
+import ru.yandex.practicum.filmorate.storages.ReviewStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +36,9 @@ import static org.mockito.Mockito.when;
 class UserServiceImplTest {
     @Mock
     private UserStorage userStorage;
+
+    @Mock
+    private FeedStorage feedStorage;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -282,5 +294,33 @@ class UserServiceImplTest {
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertSame(friend5, actual.get(0));
+    }
+
+    @Test
+    void getFeedByUserId_ifFounded_ThenReturnFilledList() {
+        var user = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        var expected = Event.builder().eventId(1L).userId(1L).build();
+        when(userStorage.getUserById(1L)).thenReturn(Optional.of(user));
+        when(feedStorage.getFeedByUser(any())).thenReturn(List.of(expected));
+
+        var actual = userService.getFeedByUserId(1L);
+        verify(feedStorage).getFeedByUser(user);
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertSame(expected, actual.get(0));
+
+    }
+    @Test
+    void getFeedByUserId_ifNotFound_ThenReturnEmptyList() {
+        var user = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        when(userStorage.getUserById(1L)).thenReturn(Optional.of(user));
+        when(feedStorage.getFeedByUser(any())).thenReturn(new ArrayList<>());
+
+        var actual = userService.getFeedByUserId(1L);
+
+        verify(feedStorage).getFeedByUser(user);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+
     }
 }
