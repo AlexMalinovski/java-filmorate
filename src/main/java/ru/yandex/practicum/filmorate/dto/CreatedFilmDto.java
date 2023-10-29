@@ -37,5 +37,8 @@ public final class CreatedFilmDto {
     private final FilmRating mpa;
 
     @Builder.Default
+    private final List<CreatedDirectorDto> directors = new ArrayList<>();
+
+    @Builder.Default
     private final List<CreatedGenreDto> genres = new ArrayList<>();
 }

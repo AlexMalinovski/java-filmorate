@@ -37,5 +37,7 @@ public final class FilmDto {
     @Valid
     private final LongIdDto mpa;
 
+    private final List<@Valid LongIdDto> directors;
+
     private final List<@Valid LongIdDto> genres;
 }
