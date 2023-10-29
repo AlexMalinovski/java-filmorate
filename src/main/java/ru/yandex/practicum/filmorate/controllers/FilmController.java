@@ -22,6 +22,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.SearchService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @RestController
 public class FilmController {
     private final FilmService filmService;
+    private final SearchService searchService;
     private final ConversionService conversionService;
 
     @GetMapping("/films")
@@ -168,6 +170,28 @@ public class FilmController {
                 .collect(Collectors.toList());
         log.debug("Получен список фильмов режиссера с id = {}, отсортированный по {}", directorId, sortBy);
         return ResponseEntity.ok(filmsDto);
+    }
+
+    @GetMapping(path = "/films/search")
+    public ResponseEntity<List<CreatedFilmDto>> getFilmsBySearch(@RequestParam(value = "query", required = false, defaultValue = "popular") String str,
+                                                                 @RequestParam(value = "by", required = false, defaultValue = "nothing") String by) {
+
+        List<CreatedFilmDto> filmsDto;
+        if (str.equals("popular")) {
+            filmsDto = filmService.getMostPopularFilms(10)
+                    .stream()
+                    .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                    .collect(Collectors.toList());
+            log.debug("Получены 10 популярных фильмов");
+            return ResponseEntity.ok(filmsDto);
+        }
+
+       filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
+               .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+               .collect(Collectors.toList());
+        log.debug("Выполнен поиск фильмов по {} c запросом {}", by, str);
+        return ResponseEntity.ok(filmsDto);
+
     }
 
     @GetMapping("/genres")
