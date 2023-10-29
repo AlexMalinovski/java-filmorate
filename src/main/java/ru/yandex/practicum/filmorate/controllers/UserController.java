@@ -198,4 +198,11 @@ public class UserController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(feed);
     }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<> deleteUserById(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+    }
 }
