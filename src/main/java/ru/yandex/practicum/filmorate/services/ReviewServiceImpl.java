@@ -66,6 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public Review addOrUpdateDislikeReview(long id, long userId) {
         final Review review = reviewStorage.getReviewById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден отзыв с id:" + id));

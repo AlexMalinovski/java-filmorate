@@ -185,11 +185,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getMostPopularFilms(int count, Long genreId, Integer year) {
         return filmStorage.getMostPopularFilms(count, genreId, year);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getFilmsByDirector(long directorId, FilmSort sort) {
 
         directorStorage.getDirectorById(directorId)
@@ -199,11 +201,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Genre> getGenres() {
         return genreStorage.getAllGenres();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Genre> getGenreById(long id) {
         return genreStorage.getGenreById(id);
     }
@@ -230,6 +234,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Film deleteFilmById(long id) throws NotFoundException, IllegalStateException {
         final Film film = filmStorage.getFilmById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден фильм с id: " + id));
