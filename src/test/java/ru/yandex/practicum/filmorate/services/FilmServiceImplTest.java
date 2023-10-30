@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -338,5 +340,30 @@ class FilmServiceImplTest {
         assertEquals(2, actual.size());
         assertEquals(3L, actual.get(0).getId());
         assertEquals(2L, actual.get(1).getId());
+    }
+
+    @Test
+    public void deleteFilmById_shouldDeleteFilmIfFilmExists() throws NotFoundException, IllegalStateException {
+        long filmId = 1L;
+        var mockFilm = Film.builder().id(1L).name("name").build();
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(mockFilm));
+        Film deletedFilm = filmService.deleteFilmById(filmId);
+        assertEquals(mockFilm, deletedFilm);
+        verify(filmStorage).deleteFilmById(filmId);
+        verify(filmStorage).getFilmById(filmId);
+    }
+
+    @Test
+    public void deleteFilmById_shouldThrowNotFoundExceptionIfFilmDoesNotExist() {
+        long filmId = 1L;
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.empty());
+        NotFoundException thrown = assertThrows(
+                NotFoundException.class,
+                () -> filmService.deleteFilmById(filmId),
+                "ожидается, что deleteFilmById() выбросит NotFoundException, но  исключение не выброшено"
+        );
+        assertTrue(thrown.getMessage().contains("Не найден фильм с id: " + filmId));
+        verify(filmStorage).getFilmById(filmId);
+        verify(filmStorage, never()).deleteFilmById(anyLong());
     }
 }

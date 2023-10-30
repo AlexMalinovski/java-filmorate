@@ -157,4 +157,10 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void deleteUserById_isAvailable() throws Exception {
+        when(userService.deleteUserById((anyLong()))).thenReturn(getValidUser());
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isOk());
+    }
 }

@@ -41,4 +41,6 @@ public interface FilmStorage {
     void removeFilmGenres(long id, @NonNull Set<Long> genresToRemove);
 
     void removeFilmDirectors(long id, Set<Long> directorsToRemove);
+
+    void deleteFilmById(long id);
 }

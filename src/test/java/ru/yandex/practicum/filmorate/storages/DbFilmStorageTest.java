@@ -14,10 +14,11 @@ import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -238,5 +239,19 @@ class DbFilmStorageTest {
                     assertThat(obj).hasFieldOrPropertyWithValue("id", 2L);
                     assertThat(obj).hasFieldOrPropertyWithValue("directors", Set.of());
                 });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void deleteFilmById() {
+        filmStorage.deleteFilmById(3L);
+        List<Film> actual = filmStorage.getAllFilms();
+        Optional<Film> deletedFilmOpt = filmStorage.getFilmById(3L);
+        filmStorage.getAllFilmLikes();
+        Set<Long> likeSet = filmStorage.getUserFilmLikes(3L);
+
+        assertThat(likeSet).isEmpty();
+        assertEquals(2, actual.size());
+        assertThat(deletedFilmOpt).isEmpty();
     }
 }

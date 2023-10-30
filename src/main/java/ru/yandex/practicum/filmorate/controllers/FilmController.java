@@ -245,4 +245,14 @@ public class FilmController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(filmsDto);
     }
+
+    @DeleteMapping(path = "/films/{id}")
+    public ResponseEntity<CreatedFilmDto> deleteFilmById(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        Film deletedFilm = filmService.deleteFilmById(id);
+        log.debug("фильм id={} удален", id);
+        return ResponseEntity.ok(conversionService.convert(deletedFilm, CreatedFilmDto.class));
+    }
 }

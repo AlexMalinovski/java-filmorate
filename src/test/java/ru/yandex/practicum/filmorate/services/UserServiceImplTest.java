@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -334,5 +336,30 @@ class UserServiceImplTest {
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
 
+    }
+
+    @Test
+    public void deleteUserById_shouldDeleteUserIfUserExists() throws NotFoundException, IllegalStateException {
+        long userId = 1L;
+        var mockUser = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(mockUser));
+        User deletedUser = userService.deleteUserById(userId);
+        assertEquals(mockUser, deletedUser);
+        verify(userStorage).deleteUserById(userId);
+        verify(userStorage).getUserById(userId);
+    }
+
+    @Test
+    public void deleteUserById_shouldThrowNotFoundExceptionIfUserDoesNotExist() {
+        long userId = 1L;
+        when(userStorage.getUserById(userId)).thenReturn(Optional.empty());
+        NotFoundException thrown = assertThrows(
+                NotFoundException.class,
+                () -> userService.deleteUserById(userId),
+                "ожидается, что deleteUserById() выбросит NotFoundException, но  исключение не выброшено"
+        );
+        assertTrue(thrown.getMessage().contains("Не найден пользователь id=" + userId));
+        verify(userStorage).getUserById(userId);
+        verify(userStorage, never()).deleteUserById(anyLong());
     }
 }

@@ -200,9 +200,12 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<> deleteUserById(@PathVariable long id) {
+    public ResponseEntity<CreatedUserDto> deleteUserById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
         }
+        User deletedUser = userService.deleteUserById(id);
+        log.debug("Пользователь id={} удален", id);
+        return ResponseEntity.ok(conversionService.convert(deletedUser, CreatedUserDto.class));
     }
 }

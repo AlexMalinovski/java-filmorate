@@ -128,4 +128,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void removeFilmDirectors(long id, Set<Long> directorsToRemove) {
         throw new IllegalStateException("Not implemented");
     }
+
+    @Override
+    public void deleteFilmById(long id) {
+        throw new IllegalStateException("Not implemented");
+    }
 }

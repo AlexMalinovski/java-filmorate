@@ -133,4 +133,12 @@ public class UserServiceImpl implements UserService {
                 .build();
         return feedStorage.addEvent(event);
     }
+
+    @Override
+    public User deleteUserById(long id) throws NotFoundException, IllegalStateException {
+        final User user = userStorage.getUserById(id)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
+        userStorage.deleteUserById(id);
+        return user;
+    }
 }

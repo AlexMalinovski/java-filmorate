@@ -166,15 +166,8 @@ public class DbUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUserById(Long id) {
+    public void deleteUserById(long id) {
         String sql = "delete from users where id = ?";
-        String sql = "delete from film_likes where user_id = ?";
-        String sql = "delete from film_likes where user_id = ?";
-        String sql = "delete from reviews where user_id = ?";
-        String sql = "delete from review_reactions where user_id = ?";
-        String sql = "delete from user_friends where user_id = ?";
-
         jdbcTemplate.update(sql, id);
-
     }
 }
