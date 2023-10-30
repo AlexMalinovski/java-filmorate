@@ -16,7 +16,6 @@ public class DirectorServiceImpl implements DirectorService {
     private final DirectorStorage directorStorage;
 
     @Override
-    @Transactional(readOnly = true)
     public List<Director> getDirectors() {
         return directorStorage.getAllDirectors();
     }
@@ -34,10 +33,9 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Director getDirectorById(long id) {
         return directorStorage.getDirectorById(id)
-                .orElseThrow(() -> new NotFoundException("Данный режиссер не найден"));
+                .orElseThrow(() -> new NotFoundException("Данный не найден режиссёр с id=" + id));
     }
 
     @Override

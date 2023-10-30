@@ -32,14 +32,23 @@ public class DirectorController {
     private final DirectorService directorService;
     private final ConversionService conversionService;
 
+    /**
+     * Список всех режиссёров
+     * @return List<CreatedDirectorDto>
+     */
     @GetMapping
     public ResponseEntity<List<CreatedDirectorDto>> getDirectors() {
         List<CreatedDirectorDto> directorDto = directorService.getDirectors().stream()
-                .map(d -> conversionService.convert(d, CreatedDirectorDto.class))
+                .map(director -> conversionService.convert(director, CreatedDirectorDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(directorDto);
     }
 
+    /**
+     * Создание режиссёра
+     * @param directorDto DirectorDto
+     * @return CreatedDirectorDto
+     */
     @PostMapping
     public ResponseEntity<CreatedDirectorDto> createDirector(@Valid @RequestBody DirectorDto directorDto) {
         Director director = Optional.ofNullable(conversionService.convert(directorDto, Director.class))
@@ -49,6 +58,11 @@ public class DirectorController {
         return ResponseEntity.ok(conversionService.convert(createdDirector, CreatedDirectorDto.class));
     }
 
+    /**
+     * Изменение режиссёра
+     * @param directorDto UpdateDirectorDto
+     * @return CreatedDirectorDto
+     */
     @PutMapping
     public ResponseEntity<CreatedDirectorDto> updateDirector(@Valid @RequestBody UpdateDirectorDto directorDto) {
         final Director directorUpdates = Optional.ofNullable(conversionService.convert(directorDto, Director.class))
@@ -59,6 +73,11 @@ public class DirectorController {
         return ResponseEntity.ok(conversionService.convert(director, CreatedDirectorDto.class));
     }
 
+    /**
+     * Получение режиссёра по id
+     * @param id id режиссёра
+     * @return CreatedDirectorDto
+     */
     @GetMapping(path = "/{id}")
     public ResponseEntity<CreatedDirectorDto> getDirectorById(@PathVariable long id) {
         if (id <= 0) {
@@ -69,6 +88,10 @@ public class DirectorController {
         return ResponseEntity.ok(conversionService.convert(director, CreatedDirectorDto.class));
     }
 
+    /**
+     * Удаление режиссёра
+     * @param id id режиссёра
+     */
     @DeleteMapping(path = "/{id}")
     public void deleteDirectorById(@PathVariable long id) {
         if (id <= 0) {

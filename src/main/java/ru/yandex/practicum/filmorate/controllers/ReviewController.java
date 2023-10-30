@@ -37,27 +37,34 @@ public class ReviewController {
     private final UserService userService;
     private final ConversionService conversionService;
 
-
+    /**
+     * Получение отзывов по идентификатору фильма
+     * @param filmId id фильма
+     * @param count максимальное количество отзывов в результате
+     * @return List<CreatedReviewDto>
+     */
     @GetMapping
     public ResponseEntity<List<CreatedReviewDto>> getReviews(@RequestParam(required = false) Long filmId,
                                                              @RequestParam(defaultValue = "10") int count) {
         List<CreatedReviewDto> reviewsDto = reviewService.getReviews(filmId, count)
                 .stream()
-                .map(r -> conversionService.convert(r, CreatedReviewDto.class))
+                .map(review -> conversionService.convert(review, CreatedReviewDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reviewsDto);
     }
 
     /**
      * Добавление нового отзыва.
-     *
      * @param reviewDto ReviewDto
      * @return CreatedReviewDto
      */
     @PostMapping
     public ResponseEntity<CreatedReviewDto> createReview(@Valid @RequestBody ReviewDto reviewDto) {
-        if (reviewDto.getUserId() <= 0 || reviewDto.getFilmId() <= 0) {
-            throw new NotFoundException("Переданы некорректные идентификаторы пользователя или фильма");
+        if (reviewDto.getUserId() <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
+        }
+        if (reviewDto.getFilmId() <= 0) {
+            throw new NotFoundException("Id фильма должен быть положительным числом");
         }
         Review review = Optional.ofNullable(conversionService.convert(reviewDto, Review.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации ReviewDto->Review. Метод вернул null."));
@@ -69,7 +76,6 @@ public class ReviewController {
 
     /**
      * Редактирование уже имеющегося отзыва.
-     *
      * @param updatedReviewDto UpdatedReviewDto
      * @return CreatedReviewDto
      */
@@ -86,14 +92,13 @@ public class ReviewController {
 
     /**
      * Удаление уже имеющегося отзыва.
-     *
      * @param id long ID
      * @return CreatedReviewDto
      */
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<CreatedReviewDto> deleteReviewById(@PathVariable final long id) {
         if (id <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+            throw new NotFoundException("Id отзыва должен быть положительным числом");
         }
         final Review result = reviewService.deleteReviewById(id)
                 .orElseThrow(() -> new NotFoundException("Отзыв не найден"));
@@ -104,17 +109,16 @@ public class ReviewController {
 
     /**
      * Получение отзыва по идентификатору.
-     *
      * @param id Идентификатор отзыва
      * @return CreatedReviewDto
      */
     @GetMapping(path = "/{id}")
     public ResponseEntity<CreatedReviewDto> getReviewById(@PathVariable long id) {
         if (id <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+            throw new NotFoundException("Id отзыва должен быть положительным числом");
         }
         return reviewService.getReviewById(id)
-                .map(r -> conversionService.convert(r, CreatedReviewDto.class))
+                .map(review -> conversionService.convert(review, CreatedReviewDto.class))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("Не найден отзыв с id:" + id));
     }
@@ -122,7 +126,6 @@ public class ReviewController {
     /**
      * пользователь ставит лайк отзыву.
      * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
      * @param id     id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
@@ -130,8 +133,11 @@ public class ReviewController {
     @PutMapping(path = "/{id}/like/{userId}")
     public ResponseEntity<CreatedReviewDto> addOrUpdateLikeReview(@PathVariable long id,
                                                                   @PathVariable long userId) {
-        if (id <= 0 || userId <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+        if (id <= 0) {
+            throw new NotFoundException("Id отзыва должен быть положительным числом");
+        }
+        if (userId <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
         }
         Review likedReview = reviewService.addOrUpdateLikeReview(id, userId);
         log.debug("Пользователь id={} лайкнул отзыв id={}", userId, id);
@@ -141,7 +147,6 @@ public class ReviewController {
     /**
      * пользователь ставит дизлайк отзыву.
      * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
      * @param id     id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
@@ -149,8 +154,11 @@ public class ReviewController {
     @PutMapping(path = "/{id}/dislike/{userId}")
     public ResponseEntity<CreatedReviewDto> addOrUpdateDislikeReview(@PathVariable long id,
                                                                      @PathVariable long userId) {
-        if (id <= 0 || userId <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+        if (id <= 0) {
+            throw new NotFoundException("Id отзыва должен быть положительным числом");
+        }
+        if (userId <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
         }
         Review likedReview = reviewService.addOrUpdateDislikeReview(id, userId);
         log.debug("Пользователь id={} дизлайкнул отзыв id={}", userId, id);
@@ -158,9 +166,7 @@ public class ReviewController {
     }
 
     /**
-     * пользователь ставит лайк отзыву.
-     * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
+     * пользователь удаляет лайк отзыву.
      * @param id     id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
@@ -168,8 +174,11 @@ public class ReviewController {
     @DeleteMapping(path = "/{id}/like/{userId}")
     public ResponseEntity<CreatedReviewDto> deleteLikeReview(@PathVariable long id,
                                                              @PathVariable long userId) {
-        if (id <= 0 || userId <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+        if (id <= 0) {
+            throw new NotFoundException("Id отзыва должен быть положительным числом");
+        }
+        if (userId <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
         }
         Review likedReview = reviewService.deleteLikeReview(id, userId);
         log.debug("Пользователь id={} удалил лайк отзыва id={}", userId, id);
@@ -177,9 +186,7 @@ public class ReviewController {
     }
 
     /**
-     * пользователь ставит дизлайк отзыву.
-     * Существующая реакция пользователя на отзыв будет перезаписана.
-     *
+     * пользователь удаляет дизлайк отзыву.
      * @param id     id отзыва
      * @param userId id пользователя
      * @return CreatedReviewDto
@@ -187,8 +194,11 @@ public class ReviewController {
     @DeleteMapping(path = "/{id}/dislike/{userId}")
     public ResponseEntity<CreatedReviewDto> deleteDislikeReview(@PathVariable long id,
                                                                 @PathVariable long userId) {
-        if (id <= 0 || userId <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+        if (id <= 0) {
+            throw new NotFoundException("Id отзыва должен быть положительным числом");
+        }
+        if (userId <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
         }
         Review likedReview = reviewService.deleteDislikeReview(id, userId);
         log.debug("Пользователь id={} удалил дизлайк отзыва id={}", userId, id);

@@ -23,9 +23,7 @@ public class SearchServiceImpl implements SearchService {
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
 
-
     @Override
-    @Transactional(readOnly = true)
     public List<Film> getFilmsByTitle(String title) {
         String lowCaseTitle = title.toLowerCase();
         return filmStorage.getFilmsByTitle(lowCaseTitle);
@@ -74,7 +72,7 @@ public class SearchServiceImpl implements SearchService {
             case "title,director":
                 return getFilmsByDirectorAndTitle(query);
             default:
-                throw new NotFoundException("Некорректный параметр поиска");
+                throw new NotFoundException("Неизвестный параметр поиска");
         }
     }
 }

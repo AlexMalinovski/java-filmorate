@@ -19,7 +19,6 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserStorage userStorage;
 
     @Override
-    @Transactional(readOnly = true)
     public List<Review> getReviews(Long filmId, int count) {
         return reviewStorage.getReviews(filmId, count);
     }
@@ -48,7 +47,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Review> getReviewById(long id) {
         return reviewStorage.getReviewById(id);
     }
