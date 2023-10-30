@@ -43,4 +43,5 @@ public interface UserService {
 
     @NonNull
     User deleteUserById(long id) throws NotFoundException, IllegalStateException;
+
 }

@@ -140,5 +140,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
         userStorage.deleteUserById(id);
         return user;
+
     }
 }
