@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.storages.DirectorStorage;
@@ -15,27 +16,32 @@ public class DirectorServiceImpl implements DirectorService {
     private final DirectorStorage directorStorage;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Director> getDirectors() {
         return directorStorage.getAllDirectors();
     }
 
     @Override
+    @Transactional
     public Director createDirector(Director director) {
         return directorStorage.createDirector(director);
     }
 
     @Override
+    @Transactional
     public Optional<Director> updateDirector(Director directorUpdates) {
         return directorStorage.updateDirector(directorUpdates);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Director getDirectorById(long id) {
         return directorStorage.getDirectorById(id)
                 .orElseThrow(() -> new NotFoundException("Данный режиссер не найден"));
     }
 
     @Override
+    @Transactional
     public void deleteDirectorById(long id) {
         directorStorage.deleteDirectorById(id);
     }

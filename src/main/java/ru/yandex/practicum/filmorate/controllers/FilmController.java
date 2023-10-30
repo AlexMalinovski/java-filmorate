@@ -146,11 +146,13 @@ public class FilmController {
      * @return список CreatedFilmDto
      */
     @GetMapping(path = "/films/popular")
-    public ResponseEntity<List<CreatedFilmDto>> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
+    public ResponseEntity<List<CreatedFilmDto>> getMostPopularFilms(@RequestParam(defaultValue = "10") int count,
+                                                                    @RequestParam(required = false) Long genreId,
+                                                                    @RequestParam(required = false) Integer year) {
         if (count <= 0) {
             throw new NotFoundException("Значение параметра count должно быть положительным");
         }
-        List<CreatedFilmDto> filmsDto = filmService.getMostPopularFilms(count)
+        List<CreatedFilmDto> filmsDto = filmService.getMostPopularFilms(count, genreId, year)
                 .stream()
                 .map(f -> conversionService.convert(f, CreatedFilmDto.class))
                 .collect(Collectors.toList());
@@ -184,7 +186,7 @@ public class FilmController {
 
         List<CreatedFilmDto> filmsDto;
         if (str.equals("popular")) {
-            filmsDto = filmService.getMostPopularFilms(10)
+            filmsDto = filmService.getMostPopularFilms(10, null, null)
                     .stream()
                     .map(f -> conversionService.convert(f, CreatedFilmDto.class))
                     .collect(Collectors.toList());

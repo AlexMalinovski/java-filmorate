@@ -90,6 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getUserFriends(long id) {
         final User user = userStorage.getUserById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
@@ -97,6 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getCommonFriends(long id, long otherId) throws NotFoundException {
         final User currentUser = userStorage.getUserById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
@@ -109,6 +111,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Event> getFeedByUserId(long id) throws NotFoundException {
         final User user = userStorage.getUserById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
@@ -123,6 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Event addEvent(long userId, long entityId, EventType et, Operation op) throws NotFoundException {
         Event event = Event.builder()
                 .userId(userId)
@@ -135,6 +139,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User deleteUserById(long id) throws NotFoundException, IllegalStateException {
         final User user = userStorage.getUserById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));

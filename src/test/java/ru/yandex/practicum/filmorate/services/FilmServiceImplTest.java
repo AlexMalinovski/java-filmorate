@@ -218,11 +218,11 @@ class FilmServiceImplTest {
 
     @Test
     void getMostPopularFilms_ifNotFound_thenReturnEmptyList() {
-        when(filmStorage.getMostPopularFilms(10)).thenReturn(new ArrayList<>());
+        when(filmStorage.getMostPopularFilms(10, null, null)).thenReturn(new ArrayList<>());
 
-        List<Film> actual = filmService.getMostPopularFilms(10);
+        List<Film> actual = filmService.getMostPopularFilms(10, null, null);
 
-        verify(filmStorage).getMostPopularFilms(10);
+        verify(filmStorage).getMostPopularFilms(10, null, null);
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
     }
@@ -233,11 +233,11 @@ class FilmServiceImplTest {
                 Film.builder().id(1L).build(),
                 Film.builder().id(2L).build()
         );
-        when(filmStorage.getMostPopularFilms(10)).thenReturn(expected);
+        when(filmStorage.getMostPopularFilms(10, null, null)).thenReturn(expected);
 
-        List<Film> actual = filmService.getMostPopularFilms(10);
+        List<Film> actual = filmService.getMostPopularFilms(10, null, null);
 
-        verify(filmStorage).getMostPopularFilms(10);
+        verify(filmStorage).getMostPopularFilms(10, null, null);
         assertSame(expected, actual);
     }
 

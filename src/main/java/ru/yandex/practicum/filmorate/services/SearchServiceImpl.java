@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
@@ -24,6 +25,7 @@ public class SearchServiceImpl implements SearchService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getFilmsByTitle(String title) {
         String lowCaseTitle = title.toLowerCase();
         return filmStorage.getFilmsByTitle(lowCaseTitle);
@@ -31,6 +33,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getFilmsByDirectorsName(String name) {
         String lowCaseName = name.toLowerCase();
         List<Director> needDirectors = directorStorage.getDirectorsByName(lowCaseName);
@@ -47,6 +50,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getFilmsByDirectorAndTitle(String str) {
         Set<Film> films = new HashSet<>();
 
@@ -59,6 +63,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Film> getFilmsBySearchParams(String by, String query) {
         switch (by) {
             case "director":

@@ -145,7 +145,7 @@ class FilmControllerTest {
 
     @Test
     public void getMostPopularFilms_isAvailable() throws Exception {
-        when(filmService.getMostPopularFilms(anyInt())).thenReturn(List.of(getValidFilm()));
+        when(filmService.getMostPopularFilms(anyInt(), anyLong(), anyInt())).thenReturn(List.of(getValidFilm()));
         mockMvc.perform(get("/films/popular?count=10"))
                 .andExpect(status().isOk());
     }

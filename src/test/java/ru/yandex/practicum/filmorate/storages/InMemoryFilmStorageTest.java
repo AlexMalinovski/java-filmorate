@@ -134,7 +134,7 @@ class InMemoryFilmStorageTest {
     @Test
     void getMostPopularFilms_ifEmptyStorage_thenReturnEmptyList() {
         InMemoryFilmStorage storage = new InMemoryFilmStorage();
-        List<Film> films = storage.getMostPopularFilms(10);
+        List<Film> films = storage.getMostPopularFilms(10, null, null);
         assertNotNull(films);
         assertEquals(0, films.size());
     }
@@ -149,7 +149,7 @@ class InMemoryFilmStorageTest {
         storage.getFilms().put(film1.getId(), film1);
         storage.getFilms().put(film3.getId(), film3);
 
-        List<Film> mostPopularFilms = storage.getMostPopularFilms(2);
+        List<Film> mostPopularFilms = storage.getMostPopularFilms(2, null, null);
 
         assertEquals(2, mostPopularFilms.size());
         assertEquals(film1, mostPopularFilms.get(0));
