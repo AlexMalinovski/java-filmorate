@@ -339,4 +339,10 @@ public class DbFilmStorage implements FilmStorage {
         String sql = "delete from film_directors where film_id=? and director_id in (%s)";
         jdbcTemplate.update(String.format(sql, inSql), id, directorsToRemove.toArray());
     }
+
+    @Override
+    public void deleteFilmById(long id) {
+        String sql = "delete from films where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }

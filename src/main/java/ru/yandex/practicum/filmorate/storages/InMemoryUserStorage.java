@@ -83,4 +83,9 @@ public class InMemoryUserStorage implements UserStorage {
     public List<User> getUserFriends(long id) {
         throw new IllegalStateException("Not implemented!");
     }
+
+    @Override
+    public void deleteUserById(long id) {
+        throw new IllegalStateException("Not implemented!");
+    }
 }

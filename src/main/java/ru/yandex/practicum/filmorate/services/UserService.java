@@ -40,4 +40,8 @@ public interface UserService {
 
     @NonNull
     Event addEvent(long userId, long entityId, EventType et, Operation op) throws NotFoundException;
+
+    @NonNull
+    User deleteUserById(long id) throws NotFoundException, IllegalStateException;
+
 }

@@ -181,4 +181,11 @@ class FilmControllerTest {
         mockMvc.perform(get("/films/common?userId=1&friendId=2"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void deleteFilmById_isAvailable() throws Exception {
+        when(filmService.deleteFilmById((anyLong()))).thenReturn(getValidFilm());
+        mockMvc.perform(delete("/films/1"))
+                .andExpect(status().isOk());
+    }
 }

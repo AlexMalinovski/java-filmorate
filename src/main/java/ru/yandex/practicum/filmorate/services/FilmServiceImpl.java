@@ -228,4 +228,12 @@ public class FilmServiceImpl implements FilmService {
                 .sorted(Comparator.comparingInt(Film::getNumOfLikes).reversed())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Film deleteFilmById(long id) throws NotFoundException, IllegalStateException {
+        final Film film = filmStorage.getFilmById(id)
+                .orElseThrow(() -> new NotFoundException("Не найден фильм с id: " + id));
+        filmStorage.deleteFilmById(id);
+        return film;
+    }
 }

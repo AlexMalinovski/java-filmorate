@@ -164,4 +164,10 @@ public class DbUserStorage implements UserStorage {
         List<User> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
         return mapUserQueryResult(queryResult);
     }
+
+    @Override
+    public void deleteUserById(long id) {
+        String sql = "delete from users where id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
