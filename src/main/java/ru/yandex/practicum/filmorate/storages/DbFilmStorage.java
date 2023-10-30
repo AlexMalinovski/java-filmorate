@@ -33,7 +33,6 @@ import java.util.Set;
 public class DbFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final AppProperties appProperties;
-    private final FeedStorage feedStorage;
 
     private FilmLike makeFilmLike(ResultSet rs) throws SQLException {
         return new FilmLike(rs.getLong("film_id"), rs.getLong("user_id"));
