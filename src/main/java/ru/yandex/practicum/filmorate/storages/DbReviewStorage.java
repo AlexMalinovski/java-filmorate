@@ -23,7 +23,6 @@ import java.util.Optional;
 @Primary
 public class DbReviewStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final FeedStorage feedStorage;
 
     private Review makeReview(ResultSet rs) throws SQLException {
         return Review.builder()

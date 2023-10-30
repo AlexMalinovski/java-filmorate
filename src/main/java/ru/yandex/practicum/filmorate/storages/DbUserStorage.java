@@ -25,7 +25,6 @@ import java.util.Set;
 public class DbUserStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final AppProperties appProperties;
-    private final FeedStorage feedStorage;
 
     private User makeUser(ResultSet rs) throws SQLException {
         User user = User.builder()
