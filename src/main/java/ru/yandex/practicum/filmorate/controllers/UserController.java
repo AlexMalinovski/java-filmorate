@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.CreatedEventDto;
 import ru.yandex.practicum.filmorate.dto.CreatedFilmDto;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.services.RecommendationService;
 import ru.yandex.practicum.filmorate.services.UserService;
@@ -110,6 +113,7 @@ public class UserController {
         }
         User currentUser = userService.addAsFriend(id, friendId);
         log.debug("Пользователь id={} добавил в друзья пользователя id={}", id, friendId);
+        userService.addEvent(id, friendId, EventType.FRIEND, Operation.ADD);
         return ResponseEntity.ok(conversionService.convert(currentUser, CreatedUserDto.class));
     }
 
@@ -128,6 +132,7 @@ public class UserController {
         }
         User currentUser = userService.removeFromFriends(id, friendId);
         log.debug("Пользователь id={} удалил из друзей пользователя id={}", id, friendId);
+        userService.addEvent(id, friendId, EventType.FRIEND, Operation.REMOVE);
         return ResponseEntity.ok(conversionService.convert(currentUser, CreatedUserDto.class));
     }
 
@@ -180,5 +185,27 @@ public class UserController {
                 .map(f -> conversionService.convert(f, CreatedFilmDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(films);
+    }
+
+    @GetMapping(path = "/{id}/feed")
+    public ResponseEntity<List<CreatedEventDto>> getFeedByUserId(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        List<CreatedEventDto> feed = userService.getFeedByUserId(id)
+                .stream()
+                .map(u -> conversionService.convert(u, CreatedEventDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(feed);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<CreatedUserDto> deleteUserById(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        User deletedUser = userService.deleteUserById(id);
+        log.debug("Пользователь id={} удален", id);
+        return ResponseEntity.ok(conversionService.convert(deletedUser, CreatedUserDto.class));
     }
 }

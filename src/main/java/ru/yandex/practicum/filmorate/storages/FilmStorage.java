@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.storages;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.FilmLike;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +33,8 @@ public interface FilmStorage {
 
     List<FilmLike> getAllFilmLikes();
 
+    Set<Long> getUserFilmLikes(long userId);
+
     void addFilmGenres(long id, @NonNull Set<Long> foundGenresId);
 
     void addFilmDirectors(long id, Set<Long> foundDirectors);
@@ -40,4 +42,6 @@ public interface FilmStorage {
     void removeFilmGenres(long id, @NonNull Set<Long> genresToRemove);
 
     void removeFilmDirectors(long id, Set<Long> directorsToRemove);
+
+    void deleteFilmById(long id);
 }

@@ -40,4 +40,10 @@ public interface FilmService {
 
     @NonNull
     Optional<Genre> getGenreById(long id);
+
+    @NonNull
+    List<Film> getCommonFilms(long userId, long friendId);
+
+    @NonNull
+    Film deleteFilmById(long id) throws NotFoundException, IllegalStateException;
 }

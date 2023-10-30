@@ -14,10 +14,11 @@ import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -203,6 +204,15 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void getUserFilmLikes() {
+        var actual = filmStorage.getUserFilmLikes(3L);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void addFilmGenres() {
         filmStorage.addFilmGenres(1L, Set.of(2L));
         var actual = filmStorage.getFilmById(1L);
@@ -259,5 +269,19 @@ class DbFilmStorageTest {
                     assertThat(obj).hasFieldOrPropertyWithValue("id", 2L);
                     assertThat(obj).hasFieldOrPropertyWithValue("directors", Set.of());
                 });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void deleteFilmById() {
+        filmStorage.deleteFilmById(3L);
+        List<Film> actual = filmStorage.getAllFilms();
+        Optional<Film> deletedFilmOpt = filmStorage.getFilmById(3L);
+        filmStorage.getAllFilmLikes();
+        Set<Long> likeSet = filmStorage.getUserFilmLikes(3L);
+
+        assertThat(likeSet).isEmpty();
+        assertEquals(2, actual.size());
+        assertThat(deletedFilmOpt).isEmpty();
     }
 }

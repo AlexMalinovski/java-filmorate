@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -285,5 +287,83 @@ class FilmServiceImplTest {
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertSame(expected, actual.get(0));
+    }
+
+    @Test
+    void getCommonFilms_ifNotFoundUser_thenThrowNotFoundException() {
+        final long userId = 1L;
+        final long friendId = 2L;
+        final Film film = Film.builder().id(1L).name("name").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> filmService.getCommonFilms(userId, friendId));
+
+        verify(userStorage).getUserById(userId);
+    }
+
+    @Test
+    void getCommonFilms_ifNotFoundFriend_thenThrowNotFoundException() {
+        final long userId = 1L;
+        final long friendId = 2L;
+        final Film film = Film.builder().id(1L).name("name").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> filmService.getCommonFilms(userId, friendId));
+
+        verify(userStorage).getUserById(friendId);
+    }
+
+    @Test
+    void getCommonFilms_returnCommonFilmsSortedByLikesDesc() {
+        final long userId = 1L;
+        final long friendId = 2L;
+        final Film film = Film.builder().id(1L).name("name").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(User.builder().id(userId).build()));
+        when(userStorage.getUserById(friendId)).thenReturn(Optional.of(User.builder().id(friendId).build()));
+        when(filmStorage.getUserFilmLikes(userId)).thenReturn(Set.of(1L, 2L, 3L));
+        when(filmStorage.getUserFilmLikes(friendId)).thenReturn(Set.of(2L, 3L, 4L));
+        when(filmStorage.getFilmsByIds(Set.of(2L, 3L))).thenReturn(List.of(
+                Film.builder().id(2L).build(),
+                Film.builder().id(3L).likes(Set.of(2L)).build()
+        ));
+
+        List<Film> actual = filmService.getCommonFilms(userId, friendId);
+
+        verify(userStorage).getUserById(userId);
+        verify(userStorage).getUserById(friendId);
+        verify(filmStorage).getUserFilmLikes(userId);
+        verify(filmStorage).getUserFilmLikes(friendId);
+        verify(filmStorage).getFilmsByIds(Set.of(2L, 3L));
+
+        assertNotNull(actual);
+        assertEquals(2, actual.size());
+        assertEquals(3L, actual.get(0).getId());
+        assertEquals(2L, actual.get(1).getId());
+    }
+
+    @Test
+    public void deleteFilmById_shouldDeleteFilmIfFilmExists() throws NotFoundException, IllegalStateException {
+        long filmId = 1L;
+        var mockFilm = Film.builder().id(1L).name("name").build();
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.of(mockFilm));
+        Film deletedFilm = filmService.deleteFilmById(filmId);
+        assertEquals(mockFilm, deletedFilm);
+        verify(filmStorage).deleteFilmById(filmId);
+        verify(filmStorage).getFilmById(filmId);
+    }
+
+    @Test
+    public void deleteFilmById_shouldThrowNotFoundExceptionIfFilmDoesNotExist() {
+        long filmId = 1L;
+        when(filmStorage.getFilmById(filmId)).thenReturn(Optional.empty());
+        NotFoundException thrown = assertThrows(
+                NotFoundException.class,
+                () -> filmService.deleteFilmById(filmId),
+                "ожидается, что deleteFilmById() выбросит NotFoundException, но  исключение не выброшено"
+        );
+        assertTrue(thrown.getMessage().contains("Не найден фильм с id: " + filmId));
+        verify(filmStorage).getFilmById(filmId);
+        verify(filmStorage, never()).deleteFilmById(anyLong());
     }
 }

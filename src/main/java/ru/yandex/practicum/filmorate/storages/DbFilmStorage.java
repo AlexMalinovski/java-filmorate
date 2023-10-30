@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -302,6 +303,13 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Set<Long> getUserFilmLikes(long userId) {
+        String sql = "select film_id from film_likes where user_id=?";
+
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("film_id"), userId));
+    }
+
+    @Override
     public void addFilmGenres(long id, Set<Long> foundGenresId) {
         final List<Map<String, Object>> rows = new ArrayList<>();
         foundGenresId.forEach(gid -> rows.add(Map.of("film_id", id, "genre_id", gid)));
@@ -341,5 +349,11 @@ public class DbFilmStorage implements FilmStorage {
         String inSql = String.join(",", Collections.nCopies(directorsToRemove.size(), "?"));
         String sql = "delete from film_directors where film_id=? and director_id in (%s)";
         jdbcTemplate.update(String.format(sql, inSql), id, directorsToRemove.toArray());
+    }
+
+    @Override
+    public void deleteFilmById(long id) {
+        String sql = "delete from films where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }

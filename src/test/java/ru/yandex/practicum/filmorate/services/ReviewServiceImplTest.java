@@ -174,7 +174,7 @@ class ReviewServiceImplTest {
         when(reviewStorage.getReviewById(anyLong())).thenReturn(Optional.of(expected));
         when(reviewStorage.createReviewLike(anyLong(), anyLong())).thenReturn(1);
 
-        var actual  = reviewService.addOrUpdateLikeReview(1L, 1L);
+        var actual = reviewService.addOrUpdateLikeReview(1L, 1L);
 
         verify(userStorage).getUserById(1L);
         verify(reviewStorage, times(2)).getReviewById(1L);
@@ -205,7 +205,7 @@ class ReviewServiceImplTest {
         when(reviewStorage.getReviewById(anyLong())).thenReturn(Optional.of(expected));
         when(reviewStorage.createReviewDislike(anyLong(), anyLong())).thenReturn(1);
 
-        var actual  = reviewService.addOrUpdateDislikeReview(1L, 1L);
+        var actual = reviewService.addOrUpdateDislikeReview(1L, 1L);
 
         verify(userStorage).getUserById(1L);
         verify(reviewStorage, times(2)).getReviewById(1L);

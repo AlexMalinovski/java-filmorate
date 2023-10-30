@@ -6,12 +6,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
+import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.FeedStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +35,9 @@ import static org.mockito.Mockito.when;
 class UserServiceImplTest {
     @Mock
     private UserStorage userStorage;
+
+    @Mock
+    private FeedStorage feedStorage;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -282,5 +293,73 @@ class UserServiceImplTest {
         assertNotNull(actual);
         assertEquals(1, actual.size());
         assertSame(friend5, actual.get(0));
+    }
+
+    @Test
+    void getFeedByUserId_ifFounded_ThenReturnFilledList() {
+        var user = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        List<Long> userIds = new ArrayList<>(user.getFriends());
+        userIds.add(user.getId());
+        Map<String, Object> params = new HashMap<>();
+        params.put("userIds", userIds);
+        params.put("userId", user.getId());
+        params.put("likeType", EventType.LIKE.name());
+        params.put("reviewType", EventType.REVIEW.name());
+        var expected = Event.builder().eventId(1L).userId(1L).build();
+        when(feedStorage.getUserFeed(any())).thenReturn(List.of(expected));
+
+
+        var actual = feedStorage.getUserFeed(params);
+        verify(feedStorage).getUserFeed(params);
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertSame(expected, actual.get(0));
+
+    }
+
+    @Test
+    void getFeedByUserId_ifNotFound_ThenReturnEmptyList() {
+        var user = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        List<Long> userIds = new ArrayList<>(user.getFriends());
+        userIds.add(user.getId());
+        Map<String, Object> params = new HashMap<>();
+        params.put("userIds", userIds);
+        params.put("userId", user.getId());
+        params.put("likeType", EventType.LIKE.name());
+        params.put("reviewType", EventType.REVIEW.name());
+        when(userStorage.getUserById(1L)).thenReturn(Optional.of(user));
+        when(feedStorage.getUserFeed(any())).thenReturn(new ArrayList<>());
+
+        var actual = userService.getFeedByUserId(1L);
+
+        verify(feedStorage).getUserFeed(params);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+
+    }
+
+    @Test
+    public void deleteUserById_shouldDeleteUserIfUserExists() throws NotFoundException, IllegalStateException {
+        long userId = 1L;
+        var mockUser = User.builder().id(1L).login("nameOne").name("nameOne").build();
+        when(userStorage.getUserById(userId)).thenReturn(Optional.of(mockUser));
+        User deletedUser = userService.deleteUserById(userId);
+        assertEquals(mockUser, deletedUser);
+        verify(userStorage).deleteUserById(userId);
+        verify(userStorage).getUserById(userId);
+    }
+
+    @Test
+    public void deleteUserById_shouldThrowNotFoundExceptionIfUserDoesNotExist() {
+        long userId = 1L;
+        when(userStorage.getUserById(userId)).thenReturn(Optional.empty());
+        NotFoundException thrown = assertThrows(
+                NotFoundException.class,
+                () -> userService.deleteUserById(userId),
+                "ожидается, что deleteUserById() выбросит NotFoundException, но  исключение не выброшено"
+        );
+        assertTrue(thrown.getMessage().contains("Не найден пользователь id=" + userId));
+        verify(userStorage).getUserById(userId);
+        verify(userStorage, never()).deleteUserById(anyLong());
     }
 }

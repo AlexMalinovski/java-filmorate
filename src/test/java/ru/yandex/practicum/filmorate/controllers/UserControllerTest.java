@@ -150,4 +150,17 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void getFeedByUserId_isAvailable() throws Exception {
+        when(userService.getFeedByUserId(anyLong())).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/users/1/feed"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteUserById_isAvailable() throws Exception {
+        when(userService.deleteUserById((anyLong()))).thenReturn(getValidUser());
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isOk());
+    }
 }

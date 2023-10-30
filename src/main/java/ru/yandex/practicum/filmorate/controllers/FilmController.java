@@ -18,11 +18,14 @@ import ru.yandex.practicum.filmorate.dto.CreatedGenreDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.FilmSort;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.services.FilmService;
 import ru.yandex.practicum.filmorate.services.SearchService;
+import ru.yandex.practicum.filmorate.services.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
 @RestController
 public class FilmController {
     private final FilmService filmService;
+    private final UserService userService;
     private final SearchService searchService;
     private final ConversionService conversionService;
 
@@ -111,6 +115,7 @@ public class FilmController {
         }
         Film likedFilm = filmService.likeFilm(filmId, userId);
         log.debug("Пользователь id={} лайкнул фильм id={}", userId, filmId);
+        userService.addEvent(userId, filmId, EventType.LIKE, Operation.ADD);
         return ResponseEntity.ok(conversionService.convert(likedFilm, CreatedFilmDto.class));
     }
 
@@ -129,6 +134,7 @@ public class FilmController {
         }
         Film unlikedFilm = filmService.unlikeFilm(filmId, userId);
         log.debug("Пользователь id={} дизлайкнул фильм id={}", userId, filmId);
+        userService.addEvent(userId, filmId, EventType.LIKE, Operation.REMOVE);
         return ResponseEntity.ok(conversionService.convert(unlikedFilm, CreatedFilmDto.class));
     }
 
@@ -188,9 +194,9 @@ public class FilmController {
             return ResponseEntity.ok(filmsDto);
         }
 
-       filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
-               .map(f -> conversionService.convert(f, CreatedFilmDto.class))
-               .collect(Collectors.toList());
+        filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
         log.debug("Выполнен поиск фильмов по {} c запросом {}", by, str);
         return ResponseEntity.ok(filmsDto);
 
@@ -226,5 +232,29 @@ public class FilmController {
         return FilmRating.getByIndex(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("Отсутствует рейтинг с id:" + id));
+    }
+
+    @GetMapping("/films/common")
+    public ResponseEntity<List<CreatedFilmDto>> getCommonFilms(@RequestParam long userId,
+                                                               @RequestParam long friendId) {
+        if (friendId <= 0 || userId <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getCommonFilms(userId, friendId)
+                .stream()
+                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filmsDto);
+    }
+
+    @DeleteMapping(path = "/films/{id}")
+    public ResponseEntity<CreatedFilmDto> deleteFilmById(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Некорректные параметры URL");
+        }
+        Film deletedFilm = filmService.deleteFilmById(id);
+        log.debug("фильм id={} удален", id);
+        return ResponseEntity.ok(conversionService.convert(deletedFilm, CreatedFilmDto.class));
     }
 }
