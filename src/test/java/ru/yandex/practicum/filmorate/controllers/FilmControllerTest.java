@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.configs.TestAppConfig;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.LongIdDto;
@@ -18,6 +17,9 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.SearchService;
+import ru.yandex.practicum.filmorate.services.UserService;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,6 +41,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FilmControllerTest {
     @MockBean
     private FilmService filmService;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private SearchService searchService;
 
     @Autowired
     private ConversionService conversionService;
@@ -137,7 +145,7 @@ class FilmControllerTest {
 
     @Test
     public void getMostPopularFilms_isAvailable() throws Exception {
-        when(filmService.getMostPopularFilms(anyInt())).thenReturn(List.of(getValidFilm()));
+        when(filmService.getMostPopularFilms(anyInt(), anyLong(), anyInt())).thenReturn(List.of(getValidFilm()));
         mockMvc.perform(get("/films/popular?count=10"))
                 .andExpect(status().isOk());
     }
@@ -164,6 +172,20 @@ class FilmControllerTest {
     @Test
     public void getFilmRatingById_isAvailable() throws Exception {
         mockMvc.perform(get("/mpa/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getCommonFilms_isAvailable() throws Exception {
+        when(filmService.getCommonFilms(anyLong(), anyLong())).thenReturn(List.of(getValidFilm()));
+        mockMvc.perform(get("/films/common?userId=1&friendId=2"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteFilmById_isAvailable() throws Exception {
+        when(filmService.deleteFilmById((anyLong()))).thenReturn(getValidFilm());
+        mockMvc.perform(delete("/films/1"))
                 .andExpect(status().isOk());
     }
 }

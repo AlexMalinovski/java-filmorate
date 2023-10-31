@@ -146,4 +146,17 @@ class DbUserStorageTest {
         assertEquals(2L, actual.get(0).getId());
         assertEquals(3L, actual.get(1).getId());
     }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void deleteUserById() {
+        userStorage.deleteUserById(3L);
+        List<User> actual = userStorage.getAllUsers();
+        Optional<User> deletedUserOpt = userStorage.getUserById(3L);
+        List<User> friendsList = userStorage.getUserFriends(2L);
+
+        assertEquals(2, actual.size());
+        assertThat(deletedUserOpt).isEmpty();
+        assertEquals(1, friendsList.size());
+    }
 }

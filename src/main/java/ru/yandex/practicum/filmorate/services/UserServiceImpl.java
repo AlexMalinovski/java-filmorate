@@ -4,17 +4,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.Event;
+import ru.yandex.practicum.filmorate.models.EventType;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.FeedStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
 
     @Override
     public List<User> getUsers() {
@@ -81,6 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getUserFriends(long id) {
         final User user = userStorage.getUserById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
@@ -88,6 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getCommonFriends(long id, long otherId) throws NotFoundException {
         final User currentUser = userStorage.getUserById(id)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
@@ -97,5 +108,43 @@ public class UserServiceImpl implements UserService {
         HashSet<User> otherFriends = new HashSet<>(userStorage.getUserFriends(otherId));
         commonFriends.retainAll(otherFriends);
         return List.copyOf(commonFriends);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Event> getFeedByUserId(long id) throws NotFoundException {
+        final User user = userStorage.getUserById(id)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
+        List<Long> userIds = new ArrayList<>(user.getFriends());
+        userIds.add(user.getId());
+        Map<String, Object> params = new HashMap<>();
+        params.put("userIds", userIds);
+        params.put("userId", user.getId());
+        params.put("likeType", EventType.LIKE.name());
+        params.put("reviewType", EventType.REVIEW.name());
+        return feedStorage.getUserFeed(params);
+    }
+
+    @Override
+    @Transactional
+    public Event addEvent(long userId, long entityId, EventType et, Operation op) throws NotFoundException {
+        Event event = Event.builder()
+                .userId(userId)
+                .entityId(entityId)
+                .eventType(et)
+                .operation(op)
+                .timestamp(Instant.now().toEpochMilli())
+                .build();
+        return feedStorage.addEvent(event);
+    }
+
+    @Override
+    @Transactional
+    public User deleteUserById(long id) throws NotFoundException, IllegalStateException {
+        final User user = userStorage.getUserById(id)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь id=" + id));
+        userStorage.deleteUserById(id);
+        return user;
+
     }
 }

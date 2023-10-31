@@ -9,12 +9,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.configs.TestAppConfig;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.RecommendationService;
 import ru.yandex.practicum.filmorate.services.UserService;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,6 +36,9 @@ class UserControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private RecommendationService recommendationService;
 
     @Autowired
     private ConversionService conversionService;
@@ -139,4 +143,24 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void getRecommendations_isAvailable() throws Exception {
+        when(recommendationService.getRecommendations(anyLong())).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/users/1/recommendations"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getFeedByUserId_isAvailable() throws Exception {
+        when(userService.getFeedByUserId(anyLong())).thenReturn(new ArrayList<>());
+        mockMvc.perform(get("/users/1/feed"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteUserById_isAvailable() throws Exception {
+        when(userService.deleteUserById((anyLong()))).thenReturn(getValidUser());
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isOk());
+    }
 }

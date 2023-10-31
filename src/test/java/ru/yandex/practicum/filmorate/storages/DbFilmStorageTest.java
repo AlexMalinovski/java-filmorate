@@ -6,17 +6,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import ru.yandex.practicum.filmorate.models.Director;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -106,11 +110,59 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void getFilmsByIds() {
+        var actual = filmStorage.getFilmsByIds(Set.of(1L, 2L, 2000L));
+
+        assertNotNull(actual);
+        assertEquals(2, actual.size());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void getMostPopularFilms() {
-        var actual = filmStorage.getMostPopularFilms(2);
+        var actual = filmStorage.getMostPopularFilms(2, null, null);
 
         assertEquals(2, actual.size());
         assertEquals(3L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getMostPopularFilms_byGenre() {
+        var actual = filmStorage.getMostPopularFilms(2, 3L, null);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertEquals(2L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getMostPopularFilms_byYear() {
+        var actual = filmStorage.getMostPopularFilms(2, null, 2010);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertEquals(2L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getMostPopularFilms_byYearAndGenre() {
+        var actual = filmStorage.getMostPopularFilms(2, 3L, 2010);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+        assertEquals(2L, actual.get(0).getId());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getFilmsByDirector() {
+        var actual = filmStorage.getFilmsByDirector(1L, FilmSort.LIKES);
+
+        assertEquals(1, actual.size());
+        assertEquals(1L, actual.get(0).getId());
     }
 
     @Test
@@ -143,6 +195,24 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void getAllFilmLikes() {
+        var actual = filmStorage.getAllFilmLikes();
+
+        assertNotNull(actual);
+        assertEquals(6, actual.size());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void getUserFilmLikes() {
+        var actual = filmStorage.getUserFilmLikes(3L);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void addFilmGenres() {
         filmStorage.addFilmGenres(1L, Set.of(2L));
         var actual = filmStorage.getFilmById(1L);
@@ -159,6 +229,22 @@ class DbFilmStorageTest {
 
     @Test
     @Sql({"/test-data.sql"})
+    void addFilmDirectors() {
+        filmStorage.addFilmDirectors(2L, Set.of(1L));
+        var actual = filmStorage.getFilmById(2L);
+
+        assertThat(actual)
+                .isPresent()
+                .hasValueSatisfying(obj -> {
+                    assertThat(obj).hasFieldOrPropertyWithValue("id", 2L);
+                    assertThat(obj).hasFieldOrPropertyWithValue("directors", Set.of(
+                            Director.builder().id(1L).name("firstDirector").build(),
+                            Director.builder().id(3L).name("thirdDirector").build()));
+                });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
     void removeFilmGenres() {
         filmStorage.removeFilmGenres(1L, Set.of(1L));
         var actual = filmStorage.getFilmById(1L);
@@ -169,5 +255,33 @@ class DbFilmStorageTest {
                     assertThat(obj).hasFieldOrPropertyWithValue("id", 1L);
                     assertThat(obj).hasFieldOrPropertyWithValue("genres", Set.of());
                 });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void removeFilmDirectors() {
+        filmStorage.removeFilmDirectors(2L, Set.of(3L));
+        var actual = filmStorage.getFilmById(2L);
+
+        assertThat(actual)
+                .isPresent()
+                .hasValueSatisfying(obj -> {
+                    assertThat(obj).hasFieldOrPropertyWithValue("id", 2L);
+                    assertThat(obj).hasFieldOrPropertyWithValue("directors", Set.of());
+                });
+    }
+
+    @Test
+    @Sql({"/test-data.sql"})
+    void deleteFilmById() {
+        filmStorage.deleteFilmById(3L);
+        List<Film> actual = filmStorage.getAllFilms();
+        Optional<Film> deletedFilmOpt = filmStorage.getFilmById(3L);
+        filmStorage.getAllFilmLikes();
+        Set<Long> likeSet = filmStorage.getUserFilmLikes(3L);
+
+        assertThat(likeSet).isEmpty();
+        assertEquals(2, actual.size());
+        assertThat(deletedFilmOpt).isEmpty();
     }
 }

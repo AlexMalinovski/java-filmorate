@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import ru.yandex.practicum.filmorate.converters.DirectorGenericConverter;
+import ru.yandex.practicum.filmorate.converters.EventGenericConverter;
 import ru.yandex.practicum.filmorate.converters.FilmGenericConverter;
 import ru.yandex.practicum.filmorate.converters.GenreGenericConverter;
+import ru.yandex.practicum.filmorate.converters.ReviewGenericConverter;
 import ru.yandex.practicum.filmorate.converters.UserGenericConverter;
 import ru.yandex.practicum.filmorate.utils.AppProperties;
 
@@ -19,5 +22,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new FilmGenericConverter(appProperties));
         registry.addConverter(new UserGenericConverter(appProperties));
         registry.addConverter(new GenreGenericConverter());
+        registry.addConverter(new EventGenericConverter());
+        registry.addConverter(new DirectorGenericConverter());
+        registry.addConverter(new ReviewGenericConverter());
     }
 }

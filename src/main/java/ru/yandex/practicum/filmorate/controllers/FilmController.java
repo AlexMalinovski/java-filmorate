@@ -18,9 +18,14 @@ import ru.yandex.practicum.filmorate.dto.CreatedGenreDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.models.EventType;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.FilmRating;
+import ru.yandex.practicum.filmorate.models.FilmSort;
+import ru.yandex.practicum.filmorate.models.Operation;
 import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.SearchService;
+import ru.yandex.practicum.filmorate.services.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,17 +37,28 @@ import java.util.stream.Collectors;
 @RestController
 public class FilmController {
     private final FilmService filmService;
+    private final UserService userService;
+    private final SearchService searchService;
     private final ConversionService conversionService;
 
+    /**
+     * Получение всех фильмов
+     * @return List<CreatedFilmDto>
+     */
     @GetMapping("/films")
     public ResponseEntity<List<CreatedFilmDto>> getFilms() {
         List<CreatedFilmDto> filmsDto = filmService.getFilms()
                 .stream()
-                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .map(film -> conversionService.convert(film, CreatedFilmDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(filmsDto);
     }
 
+    /**
+     * Добавление фильма
+     * @param filmDto FilmDto
+     * @return CreatedFilmDto
+     */
     @PostMapping("/films")
     public ResponseEntity<CreatedFilmDto> createFilm(@Valid @RequestBody FilmDto filmDto) {
         Film film = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
@@ -52,6 +68,11 @@ public class FilmController {
         return ResponseEntity.ok(conversionService.convert(createdFilm, CreatedFilmDto.class));
     }
 
+    /**
+     * Обновление фильма
+     * @param filmDto UpdateFilmDto
+     * @return CreatedFilmDto
+     */
     @PutMapping("/films")
     public ResponseEntity<CreatedFilmDto> updateCreatedFilm(@Valid @RequestBody UpdateFilmDto filmDto) {
         final Film filmUpdates = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
@@ -62,11 +83,17 @@ public class FilmController {
         return ResponseEntity.ok(conversionService.convert(result, CreatedFilmDto.class));
     }
 
+    /**
+     * Обновление фильма
+     * @param id id фильма
+     * @param filmDto FilmDto
+     * @return CreatedFilmDto
+     */
     @PutMapping(path = "/films/{id}")
     public ResponseEntity<CreatedFilmDto> updateFilmById(@PathVariable final long id,
-                                                     @Valid @RequestBody FilmDto filmDto) {
+                                                         @Valid @RequestBody FilmDto filmDto) {
         if (id <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+            throw new NotFoundException("Id фильма должен быть положительным числом");
         }
         final Film filmUpdates = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации FilmDto->Film. Метод вернул null."));
@@ -78,22 +105,24 @@ public class FilmController {
 
     /**
      * Получить фильм по уникальному идентификатору
+     *
      * @param id Идентификатор фильма
      * @return CreatedFilmDto
      */
     @GetMapping(path = "/films/{id}")
     public ResponseEntity<CreatedFilmDto> getFilmById(@PathVariable long id) {
         if (id <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+            throw new NotFoundException("Id фильма должен быть положительным числом");
         }
         return filmService.getFilmById(id)
-                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .map(film -> conversionService.convert(film, CreatedFilmDto.class))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("Не найден фильм с id:" + id));
     }
 
     /**
      * Пользователь ставит лайк фильму
+     *
      * @param filmId id фильма
      * @param userId id пользователя
      * @return CreatedFilmDto
@@ -101,78 +130,197 @@ public class FilmController {
     @PutMapping(path = "/films/{filmId}/like/{userId}")
     public ResponseEntity<CreatedFilmDto> likeFilm(@PathVariable long filmId,
                                                    @PathVariable long userId) {
-        if (filmId <= 0 || userId <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+        if (filmId <= 0) {
+            throw new NotFoundException("Id фильма должен быть положительным числом");
+        }
+        if (userId <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
         }
         Film likedFilm = filmService.likeFilm(filmId, userId);
         log.debug("Пользователь id={} лайкнул фильм id={}", userId, filmId);
+        userService.addEvent(userId, filmId, EventType.LIKE, Operation.ADD);
         return ResponseEntity.ok(conversionService.convert(likedFilm, CreatedFilmDto.class));
     }
 
     /**
      * Пользователь удаляет лайк фильму
+     *
      * @param filmId id фильма
      * @param userId id пользователя
      * @return CreatedFilmDto
      */
     @DeleteMapping(path = "/films/{filmId}/like/{userId}")
     public ResponseEntity<CreatedFilmDto> unlikeFilm(@PathVariable long filmId,
-                                                   @PathVariable long userId) {
-        if (filmId <= 0 || userId <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+                                                     @PathVariable long userId) {
+        if (filmId <= 0) {
+            throw new NotFoundException("Id фильма должен быть положительным числом");
+        }
+        if (userId <= 0) {
+            throw new NotFoundException("Id пользователя должен быть положительным числом");
         }
         Film unlikedFilm = filmService.unlikeFilm(filmId, userId);
         log.debug("Пользователь id={} дизлайкнул фильм id={}", userId, filmId);
+        userService.addEvent(userId, filmId, EventType.LIKE, Operation.REMOVE);
         return ResponseEntity.ok(conversionService.convert(unlikedFilm, CreatedFilmDto.class));
     }
 
     /**
      * Возвращает список из первых count фильмов по количеству лайков.
      * Если значение параметра count не задано, вернёт первые 10.
+     *
      * @param count количество фильмов
      * @return список CreatedFilmDto
      */
     @GetMapping(path = "/films/popular")
-    public ResponseEntity<List<CreatedFilmDto>> getMostPopularFilms(@RequestParam(defaultValue = "10") int count) {
+    public ResponseEntity<List<CreatedFilmDto>> getMostPopularFilms(@RequestParam(defaultValue = "10") int count,
+                                                                    @RequestParam(required = false) Long genreId,
+                                                                    @RequestParam(required = false) Integer year) {
         if (count <= 0) {
             throw new NotFoundException("Значение параметра count должно быть положительным");
         }
-        List<CreatedFilmDto> filmsDto = filmService.getMostPopularFilms(count)
+        List<CreatedFilmDto> filmsDto = filmService.getMostPopularFilms(count, genreId, year)
                 .stream()
-                .map(f -> conversionService.convert(f, CreatedFilmDto.class))
+                .map(film -> conversionService.convert(film, CreatedFilmDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(filmsDto);
     }
 
+    /**
+     * Возвращает список фильмов режиссера отсортированных по количеству лайков или году выпуска.
+     * @param sortBy способ сортировки
+     * @param directorId id режиссера
+     * @return List<CreatedFilmDto>
+     */
+    @GetMapping(path = "/films/director/{directorId}")
+    public ResponseEntity<List<CreatedFilmDto>> getFilmsByDirector(@RequestParam String sortBy,
+                                                                   @PathVariable long directorId) {
+        FilmSort sort;
+        try {
+            sort = FilmSort.valueOf(sortBy.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Недопустимое значение способа сортировки");
+        }
+        if (directorId <= 0) {
+            throw new NotFoundException("Id режиссера должен быть положительным");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getFilmsByDirector(directorId, sort)
+                .stream()
+                .map(film -> conversionService.convert(film, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        log.debug("Получен список фильмов режиссера с id = {}, отсортированный по {}", directorId, sortBy);
+        return ResponseEntity.ok(filmsDto);
+    }
+
+    /**
+     * Возвращает список фильмов, отсортированных по популярности.
+     * @param str текст для поиска
+     * @param by может принимать значения director (поиск по режиссёру), title (поиск по названию),
+     * либо оба значения через запятую при поиске одновременно и по режиссеру и по названию.
+     * @return <List<CreatedFilmDto>
+     */
+    @GetMapping(path = "/films/search")
+    public ResponseEntity<List<CreatedFilmDto>> getFilmsBySearch(@RequestParam(value = "query", required = false, defaultValue = "popular") String str,
+                                                                 @RequestParam(value = "by", required = false, defaultValue = "nothing") String by) {
+
+        List<CreatedFilmDto> filmsDto;
+        if (str.equals("popular")) {
+            filmsDto = filmService.getMostPopularFilms(10, null, null)
+                    .stream()
+                    .map(film -> conversionService.convert(film, CreatedFilmDto.class))
+                    .collect(Collectors.toList());
+            log.debug("Получены 10 популярных фильмов");
+        } else {
+            filmsDto = searchService.getFilmsBySearchParams(by, str).stream()
+                    .map(film -> conversionService.convert(film, CreatedFilmDto.class))
+                    .collect(Collectors.toList());
+            log.debug("Выполнен поиск фильмов по {} c запросом {}", by, str);
+        }
+        return ResponseEntity.ok(filmsDto);
+    }
+
+    /**
+     * Возвращает список жанров
+     * @return List<CreatedGenreDto>
+     */
     @GetMapping("/genres")
     public ResponseEntity<List<CreatedGenreDto>> getGenres() {
         List<CreatedGenreDto> genres = filmService.getGenres()
                 .stream()
-                .map(g -> conversionService.convert(g, CreatedGenreDto.class))
+                .map(genre -> conversionService.convert(genre, CreatedGenreDto.class))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(genres);
     }
 
+    /**
+     * Возвращает жанр по его id
+     * @param id id жанра
+     * @return CreatedGenreDto
+     */
     @GetMapping("/genres/{id}")
     public ResponseEntity<CreatedGenreDto> getGenreById(@PathVariable long id) {
         if (id <= 0) {
-            throw new NotFoundException("Некорректные параметры URL");
+            throw new NotFoundException("Id жанра должен быть положительным числом");
         }
         return filmService.getGenreById(id)
-                .map(g -> conversionService.convert(g, CreatedGenreDto.class))
+                .map(genre -> conversionService.convert(genre, CreatedGenreDto.class))
                 .map(ResponseEntity::ok)
-                .orElseThrow(() ->  new NotFoundException("Не найден жанр с id:" + id));
+                .orElseThrow(() -> new NotFoundException("Не найден жанр с id:" + id));
     }
 
+    /**
+     * Возвращает список возрастных рейтиногов
+     * @return List<FilmRating>
+     */
     @GetMapping("/mpa")
     public ResponseEntity<List<FilmRating>> getFilmRatings() {
-        return  ResponseEntity.ok(List.of(FilmRating.values()));
+        return ResponseEntity.ok(List.of(FilmRating.values()));
     }
 
+    /**
+     * Возвращает рейтинг по его id
+     * @param id id рейтинга
+     * @return FilmRating
+     */
     @GetMapping("/mpa/{id}")
     public ResponseEntity<FilmRating> getFilmRatingById(@PathVariable int id) {
         return FilmRating.getByIndex(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new NotFoundException("Отсутствует рейтинг с id:" + id));
+    }
+
+    /**
+     * Возвращает общие с другом фильмы с сортировкой по их популярности.
+     * @param userId идентификатор пользователя, запрашивающего информацию
+     * @param friendId идентификатор пользователя, с которым необходимо сравнить список фильмов
+     * @return List<CreatedFilmDto>
+     */
+    @GetMapping("/films/common")
+    public ResponseEntity<List<CreatedFilmDto>> getCommonFilms(@RequestParam long userId,
+                                                               @RequestParam long friendId) {
+        if (friendId <= 0 || userId <= 0) {
+            throw new NotFoundException("Id пользователей должны быть положительными числами");
+        }
+
+        List<CreatedFilmDto> filmsDto = filmService.getCommonFilms(userId, friendId)
+                .stream()
+                .map(film -> conversionService.convert(film, CreatedFilmDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filmsDto);
+    }
+
+    /**
+     * Удаляет фильм по его id
+     * @param id id фильма
+     * @return CreatedFilmDto
+     */
+    @DeleteMapping(path = "/films/{id}")
+    public ResponseEntity<CreatedFilmDto> deleteFilmById(@PathVariable long id) {
+        if (id <= 0) {
+            throw new NotFoundException("Id фильма должен быть положительным числом");
+        }
+        Film deletedFilm = filmService.deleteFilmById(id);
+        log.debug("фильм id={} удален", id);
+        return ResponseEntity.ok(conversionService.convert(deletedFilm, CreatedFilmDto.class));
     }
 }

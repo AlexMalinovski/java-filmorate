@@ -1,8 +1,10 @@
 delete from user_friends;
 delete from film_likes;
 delete from film_genres;
+delete from film_directors;
 delete from users;
 delete from films;
+delete from directors;
 
 insert into films (id, name, description, release_date, duration, rating)
 values (1, 'film1', 'descr1', '2000-01-01', 120, 'PG'),
@@ -26,4 +28,12 @@ on conflict do nothing;
 
 insert into user_friends (user_id, friend_id)
 values (1, 2), (1, 3), (2, 1), (2, 3)
+on conflict do nothing;
+
+insert into directors (id, name)
+values (1, 'firstDirector'), (2, 'secondDirector'), (3, 'thirdDirector')
+on conflict do nothing;
+
+insert into film_directors (film_id, director_id)
+values (1,1), (1,2), (2,3)
 on conflict do nothing;

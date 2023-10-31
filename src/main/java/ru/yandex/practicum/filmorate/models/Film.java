@@ -23,6 +23,9 @@ public class Film {
     private FilmRating rating;
 
     @Builder.Default
+    private Set<Director> directors = new HashSet<>();
+
+    @Builder.Default
     private Set<Genre> genres = new HashSet<>();
 
     public Film copyOf() {
@@ -35,6 +38,7 @@ public class Film {
                 .likes(new HashSet<>(this.likes))
                 .genres(new HashSet<>(this.genres))
                 .rating(this.rating)
+                .directors(new HashSet<>(this.directors))
                 .build();
     }
 
@@ -60,5 +64,13 @@ public class Film {
 
     public void addGenre(Genre genre) {
         this.genres.add(genre);
+    }
+
+    public void addDirector(Set<Director> directors) {
+        this.directors.addAll(directors);
+    }
+
+    public void addDirector(Director director) {
+        this.directors.add(director);
     }
 }

@@ -2,11 +2,11 @@ package ru.yandex.practicum.filmorate.converters;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.GenericConverter;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.dto.CreatedUserDto;
 import ru.yandex.practicum.filmorate.dto.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.time.LocalDate;
 import java.util.AbstractMap;

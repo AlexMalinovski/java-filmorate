@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.services;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.FilmSort;
 import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.util.List;
@@ -28,11 +30,20 @@ public interface FilmService {
     Film unlikeFilm(long filmId, long userId) throws NotFoundException;
 
     @NonNull
-    List<Film> getMostPopularFilms(int count);
+    List<Film> getMostPopularFilms(int count, @Nullable Long genreId, @Nullable Integer year);
+
+    @NonNull
+    List<Film> getFilmsByDirector(long directorId, FilmSort sort);
 
     @NonNull
     List<Genre> getGenres();
 
     @NonNull
     Optional<Genre> getGenreById(long id);
+
+    @NonNull
+    List<Film> getCommonFilms(long userId, long friendId);
+
+    @NonNull
+    Film deleteFilmById(long id) throws NotFoundException, IllegalStateException;
 }

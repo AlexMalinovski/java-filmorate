@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.utils.AppProperties;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.utils.AppProperties;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -161,7 +161,13 @@ public class DbUserStorage implements UserStorage {
                 "where uf.user_id=? " +
                 "order by user_id";
 
-        List<User> queryResult =  jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
+        List<User> queryResult = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
         return mapUserQueryResult(queryResult);
+    }
+
+    @Override
+    public void deleteUserById(long id) {
+        String sql = "delete from users where id = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
