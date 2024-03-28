@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Tag(name = "Пользователи", description = "API для работы с пользователями")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -43,6 +45,7 @@ public class UserController {
      * @return List<CreatedUserDto>
      */
     @GetMapping
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение списка всех пользователей")
     public ResponseEntity<List<CreatedUserDto>> getUsers() {
         List<CreatedUserDto> userDto = userService.getUsers()
                 .stream()
@@ -57,6 +60,7 @@ public class UserController {
      * @return CreatedUserDto
      */
     @PostMapping
+    @io.swagger.v3.oas.annotations.Operation(summary = "Создание пользователя")
     public ResponseEntity<CreatedUserDto> createUser(@Valid @RequestBody UserDto userDto) {
         User user = Optional.ofNullable(conversionService.convert(userDto, User.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации UserDto->User. Метод вернул null."));
@@ -71,6 +75,7 @@ public class UserController {
      * @return CreatedUserDto
      */
     @PutMapping
+    @io.swagger.v3.oas.annotations.Operation(summary = "Редактирование пользователя")
     public ResponseEntity<CreatedUserDto> updateUser(@Valid @RequestBody UpdateUserDto userDto) {
         final User userUpdates = Optional.ofNullable(conversionService.convert(userDto, User.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации UpdateUserDto->User. Метод вернул null."));
@@ -87,6 +92,7 @@ public class UserController {
      * @return CreatedUserDto
      */
     @PutMapping(path = "/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Редактирование пользователя")
     public ResponseEntity<CreatedUserDto> updateUserById(@PathVariable final long id,
                                                          @Valid @RequestBody UserDto userDto) {
         if (id <= 0) {
@@ -106,6 +112,7 @@ public class UserController {
      * @return CreatedFilmDto
      */
     @GetMapping(path = "/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение пользователя по id")
     public ResponseEntity<CreatedUserDto> getUserById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id пользователя должен быть положительным числом");
@@ -123,6 +130,7 @@ public class UserController {
      * @return CreatedUserDto пользователя
      */
     @PutMapping(path = "/{id}/friends/{friendId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Добавление в друзья")
     public ResponseEntity<CreatedUserDto> addAsFriend(@PathVariable long id,
                                                       @PathVariable long friendId) {
         if (id <= 0 || friendId <= 0) {
@@ -141,6 +149,7 @@ public class UserController {
      * @return CreatedUserDto пользователя
      */
     @DeleteMapping(path = "/{id}/friends/{friendId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удаление из друзей")
     public ResponseEntity<CreatedUserDto> removeFromFriends(@PathVariable long id,
                                                             @PathVariable long friendId) {
         if (id <= 0 || friendId <= 0) {
@@ -158,6 +167,7 @@ public class UserController {
      * @return список CreatedUserDto
      */
     @GetMapping(path = "/{id}/friends")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение списка друзей")
     public ResponseEntity<List<CreatedUserDto>> getUserFriends(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Некорректные параметры URL");
@@ -176,6 +186,7 @@ public class UserController {
      * @return список CreatedUserDto
      */
     @GetMapping(path = "/{id}/friends/common/{otherId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение списка общих друзей")
     public ResponseEntity<List<CreatedUserDto>> getCommonFriends(@PathVariable long id,
                                                                  @PathVariable long otherId) {
         if (id <= 0 || otherId <= 0) {
@@ -194,6 +205,7 @@ public class UserController {
      * @return List<CreatedFilmDto>
      */
     @GetMapping(path = "/{id}/recommendations")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение рекомендованных фильмов")
     public ResponseEntity<List<CreatedFilmDto>> getRecommendations(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id пользователей должны быть положительными числами");
@@ -212,6 +224,7 @@ public class UserController {
      * @return List<CreatedEventDto>
      */
     @GetMapping(path = "/{id}/feed")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение ленты событий пользователя")
     public ResponseEntity<List<CreatedEventDto>> getFeedByUserId(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id пользователей должны быть положительными числами");
@@ -229,6 +242,7 @@ public class UserController {
      * @return CreatedUserDto
      */
     @DeleteMapping(path = "/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удаление пользователя")
     public ResponseEntity<CreatedUserDto> deleteUserById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id пользователей должны быть положительными числами");
