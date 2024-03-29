@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Tag(name = "Режиссёры", description = "API для работы с режиссёрами")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -37,6 +40,7 @@ public class DirectorController {
      * @return List<CreatedDirectorDto>
      */
     @GetMapping
+    @Operation(summary = "Список всех режиссёров")
     public ResponseEntity<List<CreatedDirectorDto>> getDirectors() {
         List<CreatedDirectorDto> directorDto = directorService.getDirectors().stream()
                 .map(director -> conversionService.convert(director, CreatedDirectorDto.class))
@@ -50,6 +54,7 @@ public class DirectorController {
      * @return CreatedDirectorDto
      */
     @PostMapping
+    @Operation(summary = "Создание режиссёра")
     public ResponseEntity<CreatedDirectorDto> createDirector(@Valid @RequestBody DirectorDto directorDto) {
         Director director = Optional.ofNullable(conversionService.convert(directorDto, Director.class))
                 .orElseThrow(() -> new IllegalArgumentException("Ошибка конвертации DirectorDto->Director. Метод вернул null."));
@@ -64,6 +69,7 @@ public class DirectorController {
      * @return CreatedDirectorDto
      */
     @PutMapping
+    @Operation(summary = "Изменение режиссёра")
     public ResponseEntity<CreatedDirectorDto> updateDirector(@Valid @RequestBody UpdateDirectorDto directorDto) {
         final Director directorUpdates = Optional.ofNullable(conversionService.convert(directorDto, Director.class))
                 .orElseThrow(() -> new IllegalArgumentException("Ошибка конвертации UpdateDirectorDto->Director. Метод вернул null."));
@@ -79,6 +85,7 @@ public class DirectorController {
      * @return CreatedDirectorDto
      */
     @GetMapping(path = "/{id}")
+    @Operation(summary = "Получение режиссёра по id")
     public ResponseEntity<CreatedDirectorDto> getDirectorById(@PathVariable long id) {
         if (id <= 0) {
             throw new IllegalArgumentException("Некорректные параметры URL");
@@ -93,6 +100,7 @@ public class DirectorController {
      * @param id id режиссёра
      */
     @DeleteMapping(path = "/{id}")
+    @Operation(summary = "Удаление режиссёра")
     public void deleteDirectorById(@PathVariable long id) {
         if (id <= 0) {
             throw new IllegalArgumentException("Некорректные параметры URL");

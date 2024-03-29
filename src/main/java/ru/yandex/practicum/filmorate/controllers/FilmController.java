@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Tag(name = "Фильмы", description = "API для работы с фильмами")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -46,6 +48,7 @@ public class FilmController {
      * @return List<CreatedFilmDto>
      */
     @GetMapping("/films")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение всех фильмов")
     public ResponseEntity<List<CreatedFilmDto>> getFilms() {
         List<CreatedFilmDto> filmsDto = filmService.getFilms()
                 .stream()
@@ -60,6 +63,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @PostMapping("/films")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Добавление фильма")
     public ResponseEntity<CreatedFilmDto> createFilm(@Valid @RequestBody FilmDto filmDto) {
         Film film = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации FilmDto->Film. Метод вернул null."));
@@ -74,6 +78,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @PutMapping("/films")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Обновление фильма")
     public ResponseEntity<CreatedFilmDto> updateCreatedFilm(@Valid @RequestBody UpdateFilmDto filmDto) {
         final Film filmUpdates = Optional.ofNullable(conversionService.convert(filmDto, Film.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации CreatedFilmDto->Film. Метод вернул null."));
@@ -90,6 +95,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @PutMapping(path = "/films/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Обновление фильма")
     public ResponseEntity<CreatedFilmDto> updateFilmById(@PathVariable final long id,
                                                          @Valid @RequestBody FilmDto filmDto) {
         if (id <= 0) {
@@ -110,6 +116,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @GetMapping(path = "/films/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение фильма по id")
     public ResponseEntity<CreatedFilmDto> getFilmById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id фильма должен быть положительным числом");
@@ -128,6 +135,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @PutMapping(path = "/films/{filmId}/like/{userId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Поставить лайк")
     public ResponseEntity<CreatedFilmDto> likeFilm(@PathVariable long filmId,
                                                    @PathVariable long userId) {
         if (filmId <= 0) {
@@ -150,6 +158,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @DeleteMapping(path = "/films/{filmId}/like/{userId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удалить лайк")
     public ResponseEntity<CreatedFilmDto> unlikeFilm(@PathVariable long filmId,
                                                      @PathVariable long userId) {
         if (filmId <= 0) {
@@ -172,6 +181,7 @@ public class FilmController {
      * @return список CreatedFilmDto
      */
     @GetMapping(path = "/films/popular")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Топ фильмов по лайкам")
     public ResponseEntity<List<CreatedFilmDto>> getMostPopularFilms(@RequestParam(defaultValue = "10") int count,
                                                                     @RequestParam(required = false) Long genreId,
                                                                     @RequestParam(required = false) Integer year) {
@@ -192,6 +202,7 @@ public class FilmController {
      * @return List<CreatedFilmDto>
      */
     @GetMapping(path = "/films/director/{directorId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Фильмы режиссёра")
     public ResponseEntity<List<CreatedFilmDto>> getFilmsByDirector(@RequestParam String sortBy,
                                                                    @PathVariable long directorId) {
         FilmSort sort;
@@ -220,6 +231,7 @@ public class FilmController {
      * @return <List<CreatedFilmDto>
      */
     @GetMapping(path = "/films/search")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Поиск фильмов")
     public ResponseEntity<List<CreatedFilmDto>> getFilmsBySearch(@RequestParam(value = "query", required = false, defaultValue = "popular") String str,
                                                                  @RequestParam(value = "by", required = false, defaultValue = "nothing") String by) {
 
@@ -244,6 +256,7 @@ public class FilmController {
      * @return List<CreatedGenreDto>
      */
     @GetMapping("/genres")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Список жанров")
     public ResponseEntity<List<CreatedGenreDto>> getGenres() {
         List<CreatedGenreDto> genres = filmService.getGenres()
                 .stream()
@@ -258,6 +271,7 @@ public class FilmController {
      * @return CreatedGenreDto
      */
     @GetMapping("/genres/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение жанра по его id")
     public ResponseEntity<CreatedGenreDto> getGenreById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id жанра должен быть положительным числом");
@@ -273,6 +287,7 @@ public class FilmController {
      * @return List<FilmRating>
      */
     @GetMapping("/mpa")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Список возрастных рейтиногов")
     public ResponseEntity<List<FilmRating>> getFilmRatings() {
         return ResponseEntity.ok(List.of(FilmRating.values()));
     }
@@ -283,6 +298,7 @@ public class FilmController {
      * @return FilmRating
      */
     @GetMapping("/mpa/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение рейтинга по его id")
     public ResponseEntity<FilmRating> getFilmRatingById(@PathVariable int id) {
         return FilmRating.getByIndex(id)
                 .map(ResponseEntity::ok)
@@ -296,6 +312,7 @@ public class FilmController {
      * @return List<CreatedFilmDto>
      */
     @GetMapping("/films/common")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение общих с другом фильмы с сортировкой по популярности")
     public ResponseEntity<List<CreatedFilmDto>> getCommonFilms(@RequestParam long userId,
                                                                @RequestParam long friendId) {
         if (friendId <= 0 || userId <= 0) {
@@ -315,6 +332,7 @@ public class FilmController {
      * @return CreatedFilmDto
      */
     @DeleteMapping(path = "/films/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удаление фильма")
     public ResponseEntity<CreatedFilmDto> deleteFilmById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id фильма должен быть положительным числом");

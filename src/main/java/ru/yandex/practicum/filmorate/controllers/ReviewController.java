@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Tag(name = "Отзывы", description = "API для работы с отзывами на фильмы")
 @RequiredArgsConstructor
 @Slf4j
 @RestController
@@ -44,6 +46,7 @@ public class ReviewController {
      * @return List<CreatedReviewDto>
      */
     @GetMapping
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение отзывов по id фильма")
     public ResponseEntity<List<CreatedReviewDto>> getReviews(@RequestParam(required = false) Long filmId,
                                                              @RequestParam(defaultValue = "10") int count) {
         List<CreatedReviewDto> reviewsDto = reviewService.getReviews(filmId, count)
@@ -59,6 +62,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @PostMapping
+    @io.swagger.v3.oas.annotations.Operation(summary = "Добавление нового отзыва")
     public ResponseEntity<CreatedReviewDto> createReview(@Valid @RequestBody ReviewDto reviewDto) {
         if (reviewDto.getUserId() <= 0) {
             throw new NotFoundException("Id пользователя должен быть положительным числом");
@@ -80,6 +84,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @PutMapping
+    @io.swagger.v3.oas.annotations.Operation(summary = "Редактирование отзыва")
     public ResponseEntity<CreatedReviewDto> updateCreatedReview(@Valid @RequestBody UpdatedReviewDto updatedReviewDto) {
         final Review reviewUpdates = Optional.ofNullable(conversionService.convert(updatedReviewDto, Review.class))
                 .orElseThrow(() -> new IllegalStateException("Ошибка конвертации UpdatedReviewDto->Review. Метод вернул null."));
@@ -96,6 +101,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @DeleteMapping(path = "/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удаление отзыва")
     public ResponseEntity<CreatedReviewDto> deleteReviewById(@PathVariable final long id) {
         if (id <= 0) {
             throw new NotFoundException("Id отзыва должен быть положительным числом");
@@ -113,6 +119,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @GetMapping(path = "/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение отзыва по id")
     public ResponseEntity<CreatedReviewDto> getReviewById(@PathVariable long id) {
         if (id <= 0) {
             throw new NotFoundException("Id отзыва должен быть положительным числом");
@@ -131,6 +138,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @PutMapping(path = "/{id}/like/{userId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Лайкнуть отзыв")
     public ResponseEntity<CreatedReviewDto> addOrUpdateLikeReview(@PathVariable long id,
                                                                   @PathVariable long userId) {
         if (id <= 0) {
@@ -152,6 +160,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @PutMapping(path = "/{id}/dislike/{userId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Дизлайкнуть отзыв")
     public ResponseEntity<CreatedReviewDto> addOrUpdateDislikeReview(@PathVariable long id,
                                                                      @PathVariable long userId) {
         if (id <= 0) {
@@ -172,6 +181,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @DeleteMapping(path = "/{id}/like/{userId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удаление лайка")
     public ResponseEntity<CreatedReviewDto> deleteLikeReview(@PathVariable long id,
                                                              @PathVariable long userId) {
         if (id <= 0) {
@@ -192,6 +202,7 @@ public class ReviewController {
      * @return CreatedReviewDto
      */
     @DeleteMapping(path = "/{id}/dislike/{userId}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Удаление дизлайка")
     public ResponseEntity<CreatedReviewDto> deleteDislikeReview(@PathVariable long id,
                                                                 @PathVariable long userId) {
         if (id <= 0) {
